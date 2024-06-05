@@ -1,10 +1,10 @@
 import SplayTree from "splaytree"
-import { getBboxOverlap } from "./bbox"
-import * as geomIn from "./geom-in"
-import * as geomOut from "./geom-out"
-import rounder from "./rounder"
-import SweepEvent from "./sweep-event"
-import SweepLine from "./sweep-line"
+import { getBboxOverlap } from "./bbox.js"
+import * as geomIn from "./geom-in.js"
+import * as geomOut from "./geom-out.js"
+import rounder from "./rounder.js"
+import SweepEvent from "./sweep-event.js"
+import SweepLine from "./sweep-line.js"
 
 // Limits on iterative processes to prevent infinite loops - usually caused by floating-point math round-off errors.
 const env =

@@ -1,6 +1,6 @@
 import SplayTree from "splaytree"
-import Segment from "./segment"
-import SweepEvent from "./sweep-event"
+import Segment from "./segment.js"
+import SweepEvent from "./sweep-event.js"
 
 /**
  * NOTE:  We must be careful not to change any segments while

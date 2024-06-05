@@ -1,4 +1,4 @@
-import operation from "./operation"
+import operation from "./operation.js"
 
 const union = (geom, ...moreGeoms) => operation.run("union", geom, moreGeoms)
 

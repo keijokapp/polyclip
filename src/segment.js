@@ -1,8 +1,8 @@
-import operation from "./operation"
-import SweepEvent from "./sweep-event"
-import { isInBbox, getBboxOverlap } from "./bbox"
-import { intersection } from "./vector"
-import rounder from "./rounder"
+import operation from "./operation.js"
+import SweepEvent from "./sweep-event.js"
+import { isInBbox, getBboxOverlap } from "./bbox.js"
+import { intersection } from "./vector.js"
+import rounder from "./rounder.js"
 
 // Give segments unique ID's to get consistent sorting of
 // segments and sweep events when all else is identical

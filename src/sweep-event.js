@@ -1,5 +1,5 @@
-import Segment from "./segment"
-import { cosineOfAngle, sineOfAngle } from "./vector"
+import Segment from "./segment.js"
+import { cosineOfAngle, sineOfAngle } from "./vector.js"
 
 export default class SweepEvent {
   // for ordering sweep events in the sweep event queue

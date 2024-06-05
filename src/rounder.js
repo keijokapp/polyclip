@@ -1,4 +1,4 @@
-import { cmp } from "./flp"
+import { cmp } from "./flp.js"
 import SplayTree from "splaytree"
 
 /**

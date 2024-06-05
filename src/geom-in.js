@@ -1,5 +1,5 @@
-import rounder from "./rounder"
-import Segment from "./segment"
+import rounder from "./rounder.js"
+import Segment from "./segment.js"
 
 export class RingIn {
   constructor(geomRing, poly, isExterior) {

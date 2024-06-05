@@ -1,5 +1,5 @@
-import { compareVectorAngles } from "./vector"
-import SweepEvent from "./sweep-event"
+import { compareVectorAngles } from "./vector.js"
+import SweepEvent from "./sweep-event.js"
 
 export class RingOut {
   /* Given the segments from the sweep line pass, compute & return a series

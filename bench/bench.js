@@ -4,7 +4,7 @@ import { default as load } from "load-json-file"
 import { default as Benchmark } from "benchmark"
 import { default as jstsUnion } from "@turf/union"
 import { default as w8r } from "martinez-polygon-clipping"
-import { default as mfogel } from "polygon-clipping"
+import { default as mfogel } from "../src/index.js"
 
 /**
  * Benchmark results ( c9b02e5 )
