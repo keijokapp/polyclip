@@ -3,28 +3,19 @@
   "name": "polygon-clipping",
   "version": "0.15.7",
   "description": "Apply boolean Polygon clipping operations (intersection, union, difference, xor) to your Polygons & MultiPolygons.",
-  "main": "dist/polygon-clipping.cjs.js",
-  "module": "dist/polygon-clipping.esm.js",
-  "browser": "dist/polygon-clipping.umd.js",
-  "types": "dist/polygon-clipping.d.ts",
+  "main": "src/index.js",
+  "types": "src/polygon-clipping.d.ts",
   "scripts": {
-    "build": "rollup -c && cp src/polygon-clipping.d.ts dist/polygon-clipping.d.ts",
-    "docs:dev": "vite docs",
-    "docs:build": "vite build docs",
-    "docs:eslint": "cd docs && eslint --ext .js --ext .vue *config.js src/",
-    "lint": "npm-run-all -s lint:eslint docs:eslint lint:prettier",
-    "lint:eslint": "eslint .eslintrc.cjs *.config.js bench/ src/ test/",
-    "lint:prettier": "prettier --check ./* ./.eslintrc.cjs ./.github",
+    "lint": "npm-run-all -s lint:eslint lint:prettier",
+    "lint:eslint": "eslint .eslintrc.cjs bench/ src/ test/",
+    "lint:prettier": "prettier --check ./* ./.eslintrc.cjs",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "bench": "cd bench && node bench.js",
-    "prepublishOnly": "npm-run-all --serial lint test build docs:build bench"
+    "prepublishOnly": "npm-run-all --serial lint test bench"
   },
   "files": [
-    "dist"
-  ],
-  "browserslist": [
-    "> 0.25% or not dead"
+    "src"
   ],
   "jest": {
     "collectCoverage": true,
