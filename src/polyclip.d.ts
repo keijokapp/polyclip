@@ -1,4 +1,4 @@
-declare module "polygon-clipping" {
+declare module "polyclip" {
   export type Pair = [number, number]
   export type Ring = Pair[]
   export type Polygon = Ring[]

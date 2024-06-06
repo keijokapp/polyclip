@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "polygon-clipping",
+  "name": "polyclip",
   "version": "0.15.7",
   "description": "Apply boolean polygon clipping operations (intersection, union, difference, xor) to your Polygons & MultiPolygons.",
   "exports": "./src/index.js",
@@ -27,9 +27,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mfogel/polygon-clipping.git"
+    "url": "git+https://github.com/keijokapp/polyclip.git"
   },
-  "author": "Mike Fogel <mike@fogel.ca>",
+  "author": "Keijo Kapp <projects@keijo.ee>",
   "license": "MIT",
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.24.7",
