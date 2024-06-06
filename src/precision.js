@@ -1,20 +1,21 @@
 // @ts-check
 
-import BigNumber from "bignumber.js"
-import { SplayTreeSet } from "splaytree-ts"
+import BigNumber from 'bignumber.js';
+import { SplayTreeSet } from 'splaytree-ts';
 
 /**
  * @param {number} [eps]
  */
 const set = eps => ({
-	set: /** @param {number} [eps] */eps => { precision = set(eps) },
+	set: /** @param {number} [eps] */eps => { precision = set(eps); },
 	reset: () => set(eps),
 	compare: compare(eps),
 	snap: snap(eps),
 	orient: orient(eps)
-})
+});
 
-export let precision = set()
+// eslint-disable-next-line import/prefer-default-export, import/no-mutable-exports
+export let precision = set();
 
 /**
  * @param {number} [eps]
@@ -32,25 +33,26 @@ function orient(eps) {
 	 * @returns {number}
 	 */
 	return (a, b, c) => {
-		const ax = a.x
-		const ay = a.y
-		const cx = c.x
-		const cy = c.y
+		const ax = a.x;
+		const ay = a.y;
+		const cx = c.x;
+		const cy = c.y;
 
-		const area2 = ay.minus(cy).times(b.x.minus(cx)).minus(ax.minus(cx).times(b.y.minus(cy)))
+		const area2 = ay.minus(cy).times(b.x.minus(cx)).minus(ax.minus(cx).times(b.y.minus(cy)));
 
 		if (eps
 			&& area2
 				.exponentiatedBy(2)
-				.isLessThanOrEqualTo(cx.minus(ax).exponentiatedBy(2).plus(cy.minus(ay).exponentiatedBy(2)).times(eps))
+				.isLessThanOrEqualTo(
+					cx.minus(ax).exponentiatedBy(2).plus(cy.minus(ay).exponentiatedBy(2)).times(eps)
+				)
 		) {
-			return 0
+			return 0;
 		}
 
-		return area2.comparedTo(0)
-	}
+		return area2.comparedTo(0);
+	};
 }
-
 
 /**
  * @template T
@@ -58,7 +60,7 @@ function orient(eps) {
  * @returns {T}
  */
 function identity(a) {
-	return a
+	return a;
 }
 
 /**
@@ -66,8 +68,8 @@ function identity(a) {
  */
 function snap(eps) {
 	if (eps) {
-		const xTree = new SplayTreeSet(compare(eps))
-		const yTree = new SplayTreeSet(compare(eps))
+		const xTree = new SplayTreeSet(compare(eps));
+		const yTree = new SplayTreeSet(compare(eps));
 
 		/**
 		 * @param {import('./vector.js').Vector} v
@@ -78,12 +80,12 @@ function snap(eps) {
 			y: yTree.addAndReturn(v.y)
 		});
 
-		snap({ x: new BigNumber(0), y: new BigNumber(0)})
+		snap({ x: new BigNumber(0), y: new BigNumber(0) });
 
-		return snap
+		return snap;
 	}
 
-	return identity
+	return identity;
 }
 
 /**
@@ -95,8 +97,8 @@ function compare(eps) {
 	 * @param {import('bignumber.js').BigNumber} b
 	 */
 	return (a, b) => {
-		if (eps && b.minus(a).abs().isLessThanOrEqualTo(eps)) return 0
+		if (eps && b.minus(a).abs().isLessThanOrEqualTo(eps)) return 0;
 
-		return a.comparedTo(b)
-	}
+		return a.comparedTo(b);
+	};
 }

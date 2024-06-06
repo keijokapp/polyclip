@@ -6,7 +6,7 @@
   "exports": "./src/index.js",
   "scripts": {
     "bench": "node bench/bench.js",
-    "lint": "eslint .eslintrc.cjs bench src test",
+    "lint": "eslint *.js bench src",
     "prepublishOnly": "npm-run-all --serial lint test bench",
     "test": "jest",
     "typecheck": "tsc"
@@ -32,6 +32,7 @@
   "author": "Keijo Kapp <projects@keijo.ee>",
   "license": "MIT",
   "devDependencies": {
+    "@arbendium/eslint-config-base": "^0.2.2",
     "@babel/plugin-transform-modules-commonjs": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@turf/union": "^6.5.0",

@@ -14,7 +14,7 @@
  * @returns {import('bignumber.js').BigNumber}
  */
 export function crossProduct(a, b) {
-  return a.x.times(b.y).minus(a.y.times(b.x))
+	return a.x.times(b.y).minus(a.y.times(b.x));
 }
 
 /**
@@ -24,7 +24,7 @@ export function crossProduct(a, b) {
  * @returns {import('bignumber.js').BigNumber}
  */
 export function dotProduct(a, b) {
-  return a.x.times(b.x).plus(a.y.times(b.y))
+	return a.x.times(b.x).plus(a.y.times(b.y));
 }
 
 /**
@@ -32,7 +32,7 @@ export function dotProduct(a, b) {
  * @returns {import('bignumber.js').BigNumber}
  */
 export function length(v) {
-  return dotProduct(v, v).sqrt()
+	return dotProduct(v, v).sqrt();
 }
 
 /**
@@ -43,10 +43,10 @@ export function length(v) {
  * @returns {import('bignumber.js').BigNumber}
  */
 export function sineOfAngle(pShared, pBase, pAngle) {
-  const vBase = { x: pBase.x.minus(pShared.x), y: pBase.y.minus(pShared.y) }
-  const vAngle = { x: pAngle.x.minus(pShared.x), y: pAngle.y.minus(pShared.y) }
+	const vBase = { x: pBase.x.minus(pShared.x), y: pBase.y.minus(pShared.y) };
+	const vAngle = { x: pAngle.x.minus(pShared.x), y: pAngle.y.minus(pShared.y) };
 
-  return crossProduct(vAngle, vBase).div(length(vAngle)).div(length(vBase))
+	return crossProduct(vAngle, vBase).div(length(vAngle)).div(length(vBase));
 }
 
 /**
@@ -57,10 +57,10 @@ export function sineOfAngle(pShared, pBase, pAngle) {
  * @returns {import('bignumber.js').BigNumber}
  */
 export function cosineOfAngle(pShared, pBase, pAngle) {
-  const vBase = { x: pBase.x.minus(pShared.x), y: pBase.y.minus(pShared.y) }
-  const vAngle = { x: pAngle.x.minus(pShared.x), y: pAngle.y.minus(pShared.y) }
+	const vBase = { x: pBase.x.minus(pShared.x), y: pBase.y.minus(pShared.y) };
+	const vAngle = { x: pAngle.x.minus(pShared.x), y: pAngle.y.minus(pShared.y) };
 
-  return dotProduct(vAngle, vBase).div(length(vAngle)).div(length(vBase))
+	return dotProduct(vAngle, vBase).div(length(vAngle)).div(length(vBase));
 }
 
 /**
@@ -73,14 +73,14 @@ export function cosineOfAngle(pShared, pBase, pAngle) {
  * @returns {Vector | null}
  */
 export function horizontalIntersection(pt, v, y) {
-  if (v.y.isZero()) {
-    return null
-  }
+	if (v.y.isZero()) {
+		return null;
+	}
 
-  return {
-    x: pt.x.plus((v.x.div(v.y)).times(y.minus(pt.y))),
-    y
-  }
+	return {
+		x: pt.x.plus((v.x.div(v.y)).times(y.minus(pt.y))),
+		y
+	};
 }
 
 /**
@@ -93,14 +93,14 @@ export function horizontalIntersection(pt, v, y) {
  * @returns {Vector | null}
  */
 export function verticalIntersection(pt, v, x) {
-  if (v.x.isZero()) {
-    return null
-  }
+	if (v.x.isZero()) {
+		return null;
+	}
 
-  return {
-    x,
-    y: pt.y.plus((v.y.div(v.x)).times(x.minus(pt.x)))
-  }
+	return {
+		x,
+		y: pt.y.plus((v.y.div(v.x)).times(x.minus(pt.x)))
+	};
 }
 
 /**
@@ -113,47 +113,47 @@ export function verticalIntersection(pt, v, x) {
  * @returns {Vector | null}
  */
 export function intersection(pt1, v1, pt2, v2) {
-  // take some shortcuts for vertical and horizontal lines
-  // this also ensures we don't calculate an intersection and then discover
-  // it's actually outside the bounding box of the line
-  if (v1.x.isZero()) {
-    return verticalIntersection(pt2, v2, pt1.x)
-  }
+	// take some shortcuts for vertical and horizontal lines
+	// this also ensures we don't calculate an intersection and then discover
+	// it's actually outside the bounding box of the line
+	if (v1.x.isZero()) {
+		return verticalIntersection(pt2, v2, pt1.x);
+	}
 
-  if (v2.x.isZero()) {
-    return verticalIntersection(pt1, v1, pt2.x)
-  }
+	if (v2.x.isZero()) {
+		return verticalIntersection(pt1, v1, pt2.x);
+	}
 
-  if (v1.y.isZero()) {
-    return horizontalIntersection(pt2, v2, pt1.y)
-  }
+	if (v1.y.isZero()) {
+		return horizontalIntersection(pt2, v2, pt1.y);
+	}
 
-  if (v2.y.isZero()) {
-    return horizontalIntersection(pt1, v1, pt2.y)
-  }
+	if (v2.y.isZero()) {
+		return horizontalIntersection(pt1, v1, pt2.y);
+	}
 
-  // General case for non-overlapping segments.
-  // This algorithm is based on Schneider and Eberly.
-  // http://www.cimec.org.ar/~ncalvo/Schneider_Eberly.pdf - pg 244
+	// General case for non-overlapping segments.
+	// This algorithm is based on Schneider and Eberly.
+	// http://www.cimec.org.ar/~ncalvo/Schneider_Eberly.pdf - pg 244
 
-  const kross = crossProduct(v1, v2)
-  if (kross.isZero()) {
-    return null
-  }
+	const kross = crossProduct(v1, v2);
+	if (kross.isZero()) {
+		return null;
+	}
 
-  const ve = { x: pt2.x.minus(pt1.x), y: pt2.y.minus(pt1.y) }
-  const d1 = crossProduct(ve, v1).div(kross)
-  const d2 = crossProduct(ve, v2).div(kross)
+	const ve = { x: pt2.x.minus(pt1.x), y: pt2.y.minus(pt1.y) };
+	const d1 = crossProduct(ve, v1).div(kross);
+	const d2 = crossProduct(ve, v2).div(kross);
 
-  // take the average of the two calculations to minimize rounding error
-  const x1 = pt1.x.plus(d2.times(v1.x)),
-    x2 = pt2.x.plus(d1.times(v2.x))
-  const y1 = pt1.y.plus(d2.times(v1.y)),
-    y2 = pt2.y.plus(d1.times(v2.y))
-  const x = x1.plus(x2).div(2)
-  const y = y1.plus(y2).div(2)
+	// take the average of the two calculations to minimize rounding error
+	const x1 = pt1.x.plus(d2.times(v1.x));
+	const x2 = pt2.x.plus(d1.times(v2.x));
+	const y1 = pt1.y.plus(d2.times(v1.y));
+	const y2 = pt2.y.plus(d1.times(v2.y));
+	const x = x1.plus(x2).div(2);
+	const y = y1.plus(y2).div(2);
 
-  return { x, y }
+	return { x, y };
 }
 
 /**
@@ -162,8 +162,8 @@ export function intersection(pt1, v1, pt2, v2) {
  * @returns {Vector}
  */
 export function perpendicular(v) {
-  return {
-    x: v.y.negated(),
-    y: v.x
-  }
+	return {
+		x: v.y.negated(),
+		y: v.x
+	};
 }
