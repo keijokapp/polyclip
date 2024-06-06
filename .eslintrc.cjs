@@ -3,7 +3,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ["eslint:recommended", "prettier"],
+  extends: ["eslint:recommended"],
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: "module",
@@ -13,5 +13,7 @@ module.exports = {
     "max-len": ["error", { code: 120 }],
     "no-constant-condition": ["error", { checkLoops: false }],
     semi: ["error", "never"],
+    quotes: ["error", "double"],
+    "comma-dangle": ["error", "only-multiline"]
   },
 }

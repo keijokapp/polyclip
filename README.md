@@ -6,7 +6,6 @@ Apply boolean Polygon clipping operations (`intersection`, `union`, `difference`
 
 ## Quickstart
 
-<!-- prettier-ignore-start -->
 ```javascript
 const polygonClipping = require('polygon-clipping')
 
@@ -18,7 +17,6 @@ polygonClipping.intersection(poly1, poly2 /* , poly3, ... */)
 polygonClipping.xor         (poly1, poly2 /* , poly3, ... */)
 polygonClipping.difference  (poly1, poly2 /* , poly3, ... */)
 ```
-<!-- prettier-ignore-end -->
 
 ## API
 
@@ -79,8 +77,6 @@ Global settings are set via environment variables.
 ## Changelog
 
 This project adheres to [Semantic Versioning](https://semver.org/).
-
-<!-- prettier-ignore-end -->
 
 The full changelog is available at [CHANGELOG.md](https://github.com/mfogel/polygon-clipping/blob/master/CHANGELOG.md).
 
