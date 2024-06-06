@@ -1,3 +1,12 @@
+// @ts-check
+
+/**
+ * @typedef {{
+ *   ll: import('./vector.ts').Vector,
+ *   ur: import('./vector.ts').Vector
+ * }} Bbox
+ */
+
 /**
  * A bounding box has the format:
  *
@@ -5,35 +14,45 @@
  *
  */
 
-export const isInBbox = (bbox, point) => {
+/**
+ * @param {Bbox} bbox
+ * @param {import('./vector.ts').Vector} point
+ * @returns {boolean}
+ */
+export function isInBbox(bbox, point) {
   return (
-    bbox.ll.x <= point.x &&
-    point.x <= bbox.ur.x &&
-    bbox.ll.y <= point.y &&
-    point.y <= bbox.ur.y
+    bbox.ll.x.isLessThanOrEqualTo(point.x) &&
+    point.x.isLessThanOrEqualTo(bbox.ur.x) &&
+    bbox.ll.y.isLessThanOrEqualTo(point.y) &&
+    point.y.isLessThanOrEqualTo(bbox.ur.y)
   )
 }
 
-/* Returns either null, or a bbox (aka an ordered pair of points)
+/**
+ * Returns either null, or a bbox (aka an ordered pair of points)
  * If there is only one point of overlap, a bbox with identical points
- * will be returned */
+ * will be returned
+ * @param {Bbox} b1
+ * @param {Bbox} b2
+ * @returns {Bbox | null}
+ */
 export const getBboxOverlap = (b1, b2) => {
   // check if the bboxes overlap at all
   if (
-    b2.ur.x < b1.ll.x ||
-    b1.ur.x < b2.ll.x ||
-    b2.ur.y < b1.ll.y ||
-    b1.ur.y < b2.ll.y
+    b2.ur.x.isLessThan(b1.ll.x) ||
+    b1.ur.x.isLessThan(b2.ll.x) ||
+    b2.ur.y.isLessThan(b1.ll.y) ||
+    b1.ur.y.isLessThan(b2.ll.y)
   )
     return null
 
   // find the middle two X values
-  const lowerX = b1.ll.x < b2.ll.x ? b2.ll.x : b1.ll.x
-  const upperX = b1.ur.x < b2.ur.x ? b1.ur.x : b2.ur.x
+  const lowerX = b1.ll.x.isLessThan(b2.ll.x) ? b2.ll.x : b1.ll.x
+  const upperX = b1.ur.x.isLessThan(b2.ur.x) ? b1.ur.x : b2.ur.x
 
   // find the middle two Y values
-  const lowerY = b1.ll.y < b2.ll.y ? b2.ll.y : b1.ll.y
-  const upperY = b1.ur.y < b2.ur.y ? b1.ur.y : b2.ur.y
+  const lowerY = b1.ll.y.isLessThan(b2.ll.y) ? b2.ll.y : b1.ll.y
+  const upperY = b1.ur.y.isLessThan(b2.ur.y) ? b1.ur.y : b2.ur.y
 
   // put those middle values together to get the overlap
   return { ll: { x: lowerX, y: lowerY }, ur: { x: upperX, y: upperY } }

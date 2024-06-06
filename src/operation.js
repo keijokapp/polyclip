@@ -1,25 +1,32 @@
-import SplayTree from "splaytree"
+// @ts-check
+
+import { SplayTreeSet } from "splaytree-ts"
 import { getBboxOverlap } from "./bbox.js"
 import * as geomIn from "./geom-in.js"
 import * as geomOut from "./geom-out.js"
-import rounder from "./rounder.js"
+import { precision } from "./precision.js"
 import SweepEvent from "./sweep-event.js"
 import SweepLine from "./sweep-line.js"
 
-// Limits on iterative processes to prevent infinite loops - usually caused by floating-point math round-off errors.
-const env =
-  typeof process !== "undefined" && typeof process.env !== "undefined"
-    ? process.env
-    : {}
-const POLYGON_CLIPPING_MAX_QUEUE_SIZE =
-  env.POLYGON_CLIPPING_MAX_QUEUE_SIZE || 1000000
-const POLYGON_CLIPPING_MAX_SWEEPLINE_SEGMENTS =
-  env.POLYGON_CLIPPING_MAX_SWEEPLINE_SEGMENTS || 1000000
-
 export class Operation {
-  run(type, geom, moreGeoms) {
+  // type!: string
+  // numMultiPolys!: number
+
+  constructor() {
+    /** @type {string} */
+    this.type = /** @type {any} */(undefined)
+    /** @type {number} */
+    this.numMultiPolys = /** @type {any} */(undefined)
+  }
+
+  /**
+   * @param {string} type
+   * @param {import('./geom-in.js').Geom} geom
+   * @param {import('./geom-in.js').Geom[]} moreGeoms
+   * @returns {import('./geom-in.js').MultiPoly}
+   */
+  run(type, geom,  moreGeoms) {
     operation.type = type
-    rounder.reset()
 
     /* Convert inputs to MultiPoly objects */
     const multipolys = [new geomIn.MultiPolyIn(geom, true)]
@@ -57,66 +64,37 @@ export class Operation {
     }
 
     /* Put segment endpoints in a priority queue */
-    const queue = new SplayTree(SweepEvent.compare)
+    const queue = new SplayTreeSet(SweepEvent.compare)
     for (let i = 0, iMax = multipolys.length; i < iMax; i++) {
       const sweepEvents = multipolys[i].getSweepEvents()
       for (let j = 0, jMax = sweepEvents.length; j < jMax; j++) {
-        queue.insert(sweepEvents[j])
-
-        if (queue.size > POLYGON_CLIPPING_MAX_QUEUE_SIZE) {
-          // prevents an infinite loop, an otherwise common manifestation of bugs
-          throw new Error(
-            "Infinite loop when putting segment endpoints in a priority queue " +
-              "(queue size too big).",
-          )
-        }
+        queue.add(sweepEvents[j])
       }
     }
 
     /* Pass the sweep line over those endpoints */
     const sweepLine = new SweepLine(queue)
-    let prevQueueSize = queue.size
-    let node = queue.pop()
-    while (node) {
-      const evt = node.key
-      if (queue.size === prevQueueSize) {
-        // prevents an infinite loop, an otherwise common manifestation of bugs
-        const seg = evt.segment
-        throw new Error(
-          `Unable to pop() ${evt.isLeft ? "left" : "right"} SweepEvent ` +
-            `[${evt.point.x}, ${evt.point.y}] from segment #${seg.id} ` +
-            `[${seg.leftSE.point.x}, ${seg.leftSE.point.y}] -> ` +
-            `[${seg.rightSE.point.x}, ${seg.rightSE.point.y}] from queue.`,
-        )
-      }
-
-      if (queue.size > POLYGON_CLIPPING_MAX_QUEUE_SIZE) {
-        // prevents an infinite loop, an otherwise common manifestation of bugs
-        throw new Error(
-          "Infinite loop when passing sweep line over endpoints " +
-            "(queue size too big).",
-        )
-      }
-
-      if (sweepLine.segments.length > POLYGON_CLIPPING_MAX_SWEEPLINE_SEGMENTS) {
-        // prevents an infinite loop, an otherwise common manifestation of bugs
-        throw new Error(
-          "Infinite loop when passing sweep line over endpoints " +
-            "(too many sweep line segments).",
-        )
-      }
-
+    let evt = null
+    if (queue.size != 0) {
+      evt = queue.first()
+      queue.delete(evt)
+    }
+    while (evt) {
       const newEvents = sweepLine.process(evt)
       for (let i = 0, iMax = newEvents.length; i < iMax; i++) {
         const evt = newEvents[i]
-        if (evt.consumedBy === undefined) queue.insert(evt)
+        if (evt.consumedBy === undefined) queue.add(evt)
       }
-      prevQueueSize = queue.size
-      node = queue.pop()
+      if (queue.size != 0) {
+        evt = queue.first()
+        queue.delete(evt)
+      } else {
+        evt = null
+      }
     }
 
     // free some memory we don't need anymore
-    rounder.reset()
+    precision.reset()
 
     /* Collect and compile segments we're keeping into a multipolygon */
     const ringsOut = geomOut.RingOut.factory(sweepLine.segments)

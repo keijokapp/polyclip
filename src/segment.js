@@ -1,15 +1,26 @@
+// @ts-check
+
+import { getBboxOverlap, isInBbox } from "./bbox.js"
 import operation from "./operation.js"
+import { precision } from "./precision.js"
 import SweepEvent from "./sweep-event.js"
-import { isInBbox, getBboxOverlap } from "./bbox.js"
 import { intersection } from "./vector.js"
-import rounder from "./rounder.js"
+
+/**
+ * @typedef {{
+ *  rings: import('./geom-in.js').RingIn[],
+ *  windings: number[],
+ *  multiPolys: import('./geom-in.js').MultiPolyIn[]
+ * }} State
+ */
 
 // Give segments unique ID's to get consistent sorting of
 // segments and sweep events when all else is identical
 let segmentId = 0
 
 export default class Segment {
-  /* This compare() function is for ordering segments in the sweep
+  /**
+   * This compare() function is for ordering segments in the sweep
    * line tree, and does so according to the following criteria:
    *
    * Consider the vertical line that lies an infinestimal step to the
@@ -21,6 +32,9 @@ export default class Segment {
    * If neither segment would be intersected by such a line, (if one
    * or more of the segments are vertical) then the line to be considered
    * is directly on the right-more of the two left inputs.
+   * @param {Segment} a
+   * @param {Segment} b
+   * @returns {number}
    */
   static compare(a, b) {
     const alx = a.leftSE.point.x
@@ -29,8 +43,8 @@ export default class Segment {
     const brx = b.rightSE.point.x
 
     // check if they're even in the same vertical plane
-    if (brx < alx) return 1
-    if (arx < blx) return -1
+    if (brx.isLessThan(alx)) return 1
+    if (arx.isLessThan(blx)) return -1
 
     const aly = a.leftSE.point.y
     const bly = b.leftSE.point.y
@@ -38,10 +52,10 @@ export default class Segment {
     const bry = b.rightSE.point.y
 
     // is left endpoint of segment B the right-more?
-    if (alx < blx) {
+    if (alx.isLessThan(blx)) {
       // are the two segments in the same horizontal plane?
-      if (bly < aly && bly < ary) return 1
-      if (bly > aly && bly > ary) return -1
+      if (bly.isLessThan(aly) && bly.isLessThan(ary)) return 1
+      if (bly.isGreaterThan(aly) && bly.isGreaterThan(ary)) return -1
 
       // is the B left endpoint colinear to segment A?
       const aCmpBLeft = a.comparePoint(b.leftSE.point)
@@ -58,9 +72,9 @@ export default class Segment {
     }
 
     // is left endpoint of segment A the right-more?
-    if (alx > blx) {
-      if (aly < bly && aly < bry) return -1
-      if (aly > bly && aly > bry) return 1
+    if (alx.isGreaterThan(blx)) {
+      if (aly.isLessThan(bly) && aly.isLessThan(bry)) return -1
+      if (aly.isGreaterThan(bly) && aly.isGreaterThan(bry)) return 1
 
       // is the A left endpoint colinear to segment B?
       const bCmpALeft = b.comparePoint(a.leftSE.point)
@@ -80,47 +94,47 @@ export default class Segment {
     // vertical plane, ie alx === blx
 
     // consider the lower left-endpoint to come first
-    if (aly < bly) return -1
-    if (aly > bly) return 1
+    if (aly.isLessThan(bly)) return -1
+    if (aly.isGreaterThan(bly)) return 1
 
     // left endpoints are identical
     // check for colinearity by using the left-more right endpoint
 
     // is the A right endpoint more left-more?
-    if (arx < brx) {
+    if (arx.isLessThan(brx)) {
       const bCmpARight = b.comparePoint(a.rightSE.point)
       if (bCmpARight !== 0) return bCmpARight
     }
 
     // is the B right endpoint more left-more?
-    if (arx > brx) {
+    if (arx.isGreaterThan(brx)) {
       const aCmpBRight = a.comparePoint(b.rightSE.point)
       if (aCmpBRight < 0) return 1
       if (aCmpBRight > 0) return -1
     }
 
-    if (arx !== brx) {
+    if (!arx.eq(brx)) {
       // are these two [almost] vertical segments with opposite orientation?
       // if so, the one with the lower right endpoint comes first
-      const ay = ary - aly
-      const ax = arx - alx
-      const by = bry - bly
-      const bx = brx - blx
-      if (ay > ax && by < bx) return 1
-      if (ay < ax && by > bx) return -1
+      const ay = ary.minus(aly)
+      const ax = arx.minus(alx)
+      const by = bry.minus(bly)
+      const bx = brx.minus(blx)
+      if (ay.isGreaterThan(ax) && by.isLessThan(bx)) return 1
+      if (ay.isLessThan(ax) && by.isGreaterThan(bx)) return -1
     }
 
     // we have colinear segments with matching orientation
     // consider the one with more left-more right endpoint to be first
-    if (arx > brx) return 1
-    if (arx < brx) return -1
+    if (arx.isGreaterThan(brx)) return 1
+    if (arx.isLessThan(brx)) return -1
 
     // if we get here, two two right endpoints are in the same
     // vertical plane, ie arx === brx
 
     // consider the lower right-endpoint to come first
-    if (ary < bry) return -1
-    if (ary > bry) return 1
+    if (ary.isLessThan(bry)) return -1
+    if (ary.isGreaterThan(bry)) return 1
 
     // right endpoints identical as well, so the segments are idential
     // fall back on creation order as consistent tie-breaker
@@ -131,8 +145,13 @@ export default class Segment {
     return 0
   }
 
-  /* Warning: a reference to ringWindings input will be stored,
-   *  and possibly will be later modified */
+  /**
+   * Warning: a reference to ringWindings input will be stored, and possibly will be later modified
+   * @param {SweepEvent} leftSE
+   * @param {SweepEvent} rightSE
+   * @param {import('./geom-in.js').RingIn[]} rings
+   * @param {number[]} windings
+   */
   constructor(leftSE, rightSE, rings, windings) {
     this.id = ++segmentId
     this.leftSE = leftSE
@@ -141,14 +160,41 @@ export default class Segment {
     this.rightSE = rightSE
     rightSE.segment = this
     rightSE.otherSE = leftSE
+    /** @type {import('./geom-in.js').RingIn[] | null} */
     this.rings = rings
+    /** @type {number[] | null} */
     this.windings = windings
-    // left unset for performance, set later in algorithm
-    // this.ringOut, this.consumedBy, this.prev
+
+    /** @type {import('./geom-out.js').RingOut | undefined} */
+    this.ringOut = undefined
+    /** @type {Segment | undefined} */
+    this.consumedBy = undefined
+    /** @type {Segment | null | undefined} */
+    this.prev = undefined
+    /** @type {Segment | null | undefined} */
+    this._prevInResult = undefined
+    /** @type {State | undefined} */
+    this._beforeState= undefined
+    /** @type {State | undefined} */
+    this._afterState = undefined
+    /** @type {boolean | undefined} */
+    this._isInResult =  undefined
   }
 
+  /**
+   *
+   * @param {import('./sweep-event.js').Point} pt1
+   * @param {import('./sweep-event.js').Point} pt2
+   * @param {import('./geom-in.js').RingIn} ring
+   * @returns {Segment}
+   */
   static fromRing(pt1, pt2, ring) {
-    let leftPt, rightPt, winding
+    /** @type {import('./sweep-event.js').Point} */
+    let leftPt
+    /** @type {import('./sweep-event.js').Point} */
+    let rightPt
+    /** @type {number} */
+    let winding
 
     // ordering the two points according to sweep line ordering
     const cmpPts = SweepEvent.comparePoints(pt1, pt2)
@@ -170,7 +216,10 @@ export default class Segment {
     return new Segment(leftSE, rightSE, [ring], [winding])
   }
 
-  /* When a segment is split, the rightSE is replaced with a new sweep event */
+  /**
+   * When a segment is split, the rightSE is replaced with a new sweep event
+   * @param {SweepEvent} newRightSE
+   */
   replaceRightSE(newRightSE) {
     this.rightSE = newRightSE
     this.rightSE.segment = this
@@ -182,27 +231,32 @@ export default class Segment {
     const y1 = this.leftSE.point.y
     const y2 = this.rightSE.point.y
     return {
-      ll: { x: this.leftSE.point.x, y: y1 < y2 ? y1 : y2 },
-      ur: { x: this.rightSE.point.x, y: y1 > y2 ? y1 : y2 },
+      ll: { x: this.leftSE.point.x, y: y1.isLessThan(y2) ? y1 : y2 },
+      ur: { x: this.rightSE.point.x, y: y1.isGreaterThan(y2) ? y1 : y2 },
     }
   }
 
   /* A vector from the left point to the right */
   vector() {
     return {
-      x: this.rightSE.point.x - this.leftSE.point.x,
-      y: this.rightSE.point.y - this.leftSE.point.y,
+      x: this.rightSE.point.x.minus(this.leftSE.point.x),
+      y: this.rightSE.point.y.minus(this.leftSE.point.y),
     }
   }
 
+  /**
+   * @param {import('./sweep-event.js').Point} pt
+   * @returns {boolean}
+   */
   isAnEndpoint(pt) {
     return (
-      (pt.x === this.leftSE.point.x && pt.y === this.leftSE.point.y) ||
-      (pt.x === this.rightSE.point.x && pt.y === this.rightSE.point.y)
+      (pt.x.eq(this.leftSE.point.x) && pt.y.eq(this.leftSE.point.y)) ||
+      (pt.x.eq(this.rightSE.point.x) && pt.y.eq(this.rightSE.point.y))
     )
   }
 
-  /* Compare this segment with a point.
+  /**
+   * Compare this segment with a point.
    *
    * A point P is considered to be colinear to a segment if there
    * exists a distance D such that if we travel along the segment
@@ -214,32 +268,11 @@ export default class Segment {
    *   1: point lies above the segment (to the left of vertical)
    *   0: point is colinear to segment
    *  -1: point lies below the segment (to the right of vertical)
+   * @param {import('./sweep-event.js').Point} point
+   * @returns {number}
    */
   comparePoint(point) {
-    if (this.isAnEndpoint(point)) return 0
-
-    const lPt = this.leftSE.point
-    const rPt = this.rightSE.point
-    const v = this.vector()
-
-    // Exactly vertical segments.
-    if (lPt.x === rPt.x) {
-      if (point.x === lPt.x) return 0
-      return point.x < lPt.x ? 1 : -1
-    }
-
-    // Nearly vertical segments with an intersection.
-    // Check to see where a point on the line with matching Y coordinate is.
-    const yDist = (point.y - lPt.y) / v.y
-    const xFromYDist = lPt.x + yDist * v.x
-    if (point.x === xFromYDist) return 0
-
-    // General case.
-    // Check to see where a point on the line with matching X coordinate is.
-    const xDist = (point.x - lPt.x) / v.x
-    const yFromXDist = lPt.y + xDist * v.y
-    if (point.y === yFromXDist) return 0
-    return point.y < yFromXDist ? -1 : 1
+    return precision.orient(this.leftSE.point, point, this.rightSE.point)
   }
 
   /**
@@ -256,6 +289,8 @@ export default class Segment {
    *
    * If no non-trivial intersection exists, return null
    * Else, return null.
+   * @param {Segment} other
+   * @returns {import('./sweep-event.js').Point | null}
    */
   getIntersection(other) {
     // If bboxes don't overlap, there can't be any intersections
@@ -296,7 +331,7 @@ export default class Segment {
     if (touchesThisLSE) {
       // check for segments that just intersect on opposing endpoints
       if (touchesOtherRSE) {
-        if (tlp.x === orp.x && tlp.y === orp.y) return null
+        if (tlp.x.eq(orp.x) && tlp.y.eq(orp.y)) return null
       }
       // t-intersection on left endpoint
       return tlp
@@ -306,7 +341,7 @@ export default class Segment {
     if (touchesOtherLSE) {
       // check for segments that just intersect on opposing endpoints
       if (touchesThisRSE) {
-        if (trp.x === olp.x && trp.y === olp.y) return null
+        if (trp.x.eq(olp.x) && trp.y.eq(olp.y)) return null
       }
       // t-intersection on left endpoint
       return olp
@@ -331,7 +366,7 @@ export default class Segment {
     if (!isInBbox(bboxOverlap, pt)) return null
 
     // round the the computed point if needed
-    return rounder.round(pt.x, pt.y)
+    return /** @type {import('./sweep-event.js').Point} */(precision.snap(pt))
   }
 
   /**
@@ -345,6 +380,7 @@ export default class Segment {
    *  * An array of the newly generated SweepEvents will be returned.
    *
    * Warning: input array of points is modified
+   * @param {import('./sweep-event.js').Point} point
    */
   split(point) {
     const newEvents = []
@@ -359,8 +395,8 @@ export default class Segment {
     const newSeg = new Segment(
       newLeftSE,
       oldRightSE,
-      this.rings.slice(),
-      this.windings.slice(),
+      /** @type {import('./geom-in.js').RingIn[]} */(this.rings).slice(),
+      /** @type {number[]} */(this.windings).slice(),
     )
 
     // when splitting a nearly vertical downward-facing segment,
@@ -393,14 +429,18 @@ export default class Segment {
     this.leftSE = tmpEvt
     this.leftSE.isLeft = true
     this.rightSE.isLeft = false
-    for (let i = 0, iMax = this.windings.length; i < iMax; i++) {
-      this.windings[i] *= -1
+    for (let i = 0, iMax = /** @type {number[]} */(this.windings).length; i < iMax; i++) {
+      /** @type {number[]} */(this.windings)[i] *= -1
     }
   }
 
-  /* Consume another segment. We take their rings under our wing
-   * and mark them as consumed. Use for perfectly overlapping segments */
+  /**
+   * Consume another segment. We take their rings under our wing
+   * and mark them as consumed. Use for perfectly overlapping segments
+   * @param {Segment} other
+   */
   consume(other) {
+    /** @type {Segment} */
     let consumer = this
     let consumee = other
     while (consumer.consumedBy) consumer = consumer.consumedBy
@@ -423,14 +463,16 @@ export default class Segment {
       consumee = tmp
     }
 
-    for (let i = 0, iMax = consumee.rings.length; i < iMax; i++) {
-      const ring = consumee.rings[i]
-      const winding = consumee.windings[i]
-      const index = consumer.rings.indexOf(ring)
+    for (let i = 0, iMax = /** @type {import('./geom-in.js').RingIn[]} */(consumee.rings).length; i < iMax; i++) {
+      const ring = /** @type {import('./geom-in.js').RingIn[]} */(consumee.rings)[i]
+      const winding = /** @type {number[]} */(consumee.windings)[i]
+      const index = /** @type {import('./geom-in.js').RingIn[]} */(consumer.rings).indexOf(ring)
       if (index === -1) {
-        consumer.rings.push(ring)
-        consumer.windings.push(winding)
-      } else consumer.windings[index] += winding
+        /** @type {import('./geom-in.js').RingIn[]} */(consumer.rings).push(ring);
+        /** @type {number[]} */(consumer.windings).push(winding)
+      } else {
+        /** @type {number[]} */(consumer.windings)[index] += winding
+      }
     }
     consumee.rings = null
     consumee.windings = null
@@ -441,7 +483,10 @@ export default class Segment {
     consumee.rightSE.consumedBy = consumer.rightSE
   }
 
-  /* The first segment previous segment chain that is in the result */
+  /**
+   * The first segment previous segment chain that is in the result
+   * @returns {Segment | null | undefined}
+   */
   prevInResult() {
     if (this._prevInResult !== undefined) return this._prevInResult
     if (!this.prev) this._prevInResult = null
@@ -450,6 +495,9 @@ export default class Segment {
     return this._prevInResult
   }
 
+  /**
+   * @returns {State}
+   */
   beforeState() {
     if (this._beforeState !== undefined) return this._beforeState
     if (!this.prev)
@@ -479,9 +527,9 @@ export default class Segment {
     const mpsAfter = this._afterState.multiPolys
 
     // calculate ringsAfter, windingsAfter
-    for (let i = 0, iMax = this.rings.length; i < iMax; i++) {
-      const ring = this.rings[i]
-      const winding = this.windings[i]
+    for (let i = 0, iMax = /** @type {import('./geom-in.js').RingIn[]} */(this.rings).length; i < iMax; i++) {
+      const ring = /** @type {import('./geom-in.js').RingIn[]} */(this.rings)[i]
+      const winding = /** @type {number[]} */(this.windings)[i]
       const index = ringsAfter.indexOf(ring)
       if (index === -1) {
         ringsAfter.push(ring)
@@ -565,13 +613,10 @@ export default class Segment {
       case "difference": {
         // DIFFERENCE included iff:
         //  * on exactly one side, we have just the subject
-        const isJustSubject = (mps) => mps.length === 1 && mps[0].isSubject
-        this._isInResult = isJustSubject(mpsBefore) !== isJustSubject(mpsAfter)
+        this._isInResult = (mpsBefore.length === 1 && mpsBefore[0].isSubject)
+          !== (mpsAfter.length === 1 && mpsAfter[0].isSubject)
         break
       }
-
-      default:
-        throw new Error(`Unrecognized operation type found ${operation.type}`)
     }
 
     return this._isInResult

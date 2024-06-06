@@ -1,4 +1,6 @@
-import SplayTree from "splaytree"
+// @ts-check
+
+import { SplayTreeSet } from "splaytree-ts"
 import Segment from "./segment.js"
 import SweepEvent from "./sweep-event.js"
 
@@ -14,52 +16,49 @@ import SweepEvent from "./sweep-event.js"
  */
 
 export default class SweepLine {
+  /**
+   * @param {import('splaytree-ts').SplayTreeSet<SweepEvent>} queue
+   * @param {*} comparator
+   */
   constructor(queue, comparator = Segment.compare) {
     this.queue = queue
-    this.tree = new SplayTree(comparator)
-    this.segments = []
+    this.tree = new SplayTreeSet(comparator)
+    this.segments = /** @type {Segment[]} */([])
   }
 
+  /**
+   * @param {SweepEvent} event
+   * @returns
+   */
   process(event) {
     const segment = event.segment
+    /** @type {SweepEvent[]} */
     const newEvents = []
 
     // if we've already been consumed by another segment,
     // clean up our body parts and get out
     if (event.consumedBy) {
-      if (event.isLeft) this.queue.remove(event.otherSE)
-      else this.tree.remove(segment)
+      if (event.isLeft) this.queue.delete(event.otherSE)
+      else this.tree.delete(segment)
       return newEvents
     }
 
-    const node = event.isLeft ? this.tree.add(segment) : this.tree.find(segment)
+    if (event.isLeft) this.tree.add(segment)
 
-    if (!node)
-      throw new Error(
-        `Unable to find segment #${segment.id} ` +
-          `[${segment.leftSE.point.x}, ${segment.leftSE.point.y}] -> ` +
-          `[${segment.rightSE.point.x}, ${segment.rightSE.point.y}] ` +
-          "in SweepLine tree.",
-      )
-
-    let prevNode = node
-    let nextNode = node
-    let prevSeg = undefined
-    let nextSeg = undefined
+    /** @type {Segment | null} */
+    let prevSeg = segment
+    /** @type {Segment | null} */
+    let nextSeg = segment
 
     // skip consumed segments still in tree
-    while (prevSeg === undefined) {
-      prevNode = this.tree.prev(prevNode)
-      if (prevNode === null) prevSeg = null
-      else if (prevNode.key.consumedBy === undefined) prevSeg = prevNode.key
-    }
+    do {
+      prevSeg = this.tree.lastBefore(prevSeg)
+    } while (prevSeg != null && prevSeg.consumedBy != undefined)
 
     // skip consumed segments still in tree
-    while (nextSeg === undefined) {
-      nextNode = this.tree.next(nextNode)
-      if (nextNode === null) nextSeg = null
-      else if (nextNode.key.consumedBy === undefined) nextSeg = nextNode.key
-    }
+    do {
+      nextSeg = this.tree.firstAfter(nextSeg)
+    } while (nextSeg != null && nextSeg.consumedBy != undefined)
 
     if (event.isLeft) {
       // Check for intersections against the previous segment in the sweep line
@@ -109,10 +108,10 @@ export default class SweepLine {
 
         // Rounding errors can cause changes in ordering,
         // so remove afected segments and right sweep events before splitting
-        this.queue.remove(segment.rightSE)
+        this.queue.delete(segment.rightSE)
         newEvents.push(segment.rightSE)
 
-        const newEventsFromSplit = segment.split(mySplitter)
+        const newEventsFromSplit = segment.split(/** @type {import('./sweep-event.js').Point} */(mySplitter))
         for (let i = 0, iMax = newEventsFromSplit.length; i < iMax; i++) {
           newEvents.push(newEventsFromSplit[i])
         }
@@ -122,7 +121,7 @@ export default class SweepLine {
         // We found some intersections, so re-do the current event to
         // make sure sweep line ordering is totally consistent for later
         // use with the segment 'prev' pointers
-        this.tree.remove(segment)
+        this.tree.delete(segment)
         newEvents.push(event)
       } else {
         // done with left event
@@ -152,22 +151,27 @@ export default class SweepLine {
         }
       }
 
-      this.tree.remove(segment)
+      this.tree.delete(segment)
     }
 
     return newEvents
   }
 
-  /* Safely split a segment that is currently in the datastructures
-   * IE - a segment other than the one that is currently being processed. */
+  /**
+   * Safely split a segment that is currently in the datastructures
+   * IE - a segment other than the one that is currently being processed.
+   * @param {Segment} seg
+   * @param {import('./sweep-event.js').Point} pt
+   * @returns {SweepEvent[]}
+   */
   _splitSafely(seg, pt) {
     // Rounding errors can cause changes in ordering,
     // so remove afected segments and right sweep events before splitting
     // removeNode() doesn't work, so have re-find the seg
     // https://github.com/w8r/splay-tree/pull/5
-    this.tree.remove(seg)
+    this.tree.delete(seg)
     const rightSE = seg.rightSE
-    this.queue.remove(rightSE)
+    this.queue.delete(rightSE)
     const newEvents = seg.split(pt)
     newEvents.push(rightSE)
     // splitting can trigger consumption
