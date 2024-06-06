@@ -1,7 +1,7 @@
 // @ts-check
 
 import { getBboxOverlap, isInBbox } from "./bbox.js"
-import operation from "./operation.js"
+import { getCurrentOperationMultiPolyCount, getCurrentOperationType } from "./operation.js"
 import { precision } from "./precision.js"
 import SweepEvent from "./sweep-event.js"
 import { intersection } from "./vector.js"
@@ -572,7 +572,7 @@ export default class Segment {
     const mpsBefore = this.beforeState().multiPolys
     const mpsAfter = this.afterState().multiPolys
 
-    switch (operation.type) {
+    switch (getCurrentOperationType()) {
       case "union": {
         // UNION - included iff:
         //  * On one side of us there is 0 poly interiors AND
@@ -597,7 +597,7 @@ export default class Segment {
           least = mpsAfter.length
           most = mpsBefore.length
         }
-        this._isInResult = most === operation.numMultiPolys && least < most
+        this._isInResult = most === getCurrentOperationMultiPolyCount() && least < most
         break
       }
 
