@@ -148,12 +148,15 @@ export class RingOut {
 	 * @returns {boolean}
 	 */
 	isExteriorRing() {
-		if (this._isExteriorRing === undefined) {
-			const enclosing = this.enclosingRing();
-			this._isExteriorRing = enclosing ? !enclosing.isExteriorRing() : true;
+		let i = 0;
+		let enclosing = this.enclosingRing();
+
+		while (enclosing) {
+			enclosing = enclosing.enclosingRing();
+			i++;
 		}
 
-		return this._isExteriorRing;
+		return (i % 2) === 0;
 	}
 
 	/**

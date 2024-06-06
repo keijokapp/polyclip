@@ -406,9 +406,8 @@ describe("ring", () => {
     seg3._isInResult = true
 
     const ring = RingOut.factory([seg1, seg2, seg3])[0]
-    ring._isExteriorRing = false
+    ring.isExteriorRing = () => false;
 
-    expect(ring.isExteriorRing()).toBe(false)
     expect(ring.getGeom()).toEqual([
       [0, 0],
       [0, 1],
