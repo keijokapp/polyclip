@@ -4,23 +4,21 @@ import { precision } from './precision.js';
 import SweepEvent from './sweep-event.js';
 
 export class RingOut {
-	// events: SweepEvent[]
-	// _isExteriorRing: boolean | undefined
-	// _enclosingRing: RingOut | null | undefined
-
 	/**
 	 * Given the segments from the sweep line pass, compute & return a series
 	 * of closed rings from all the segments marked to be part of the result
 	 * @param {import('./segment.js').default[]} allSegments
+	 * @returns {RingOut[]}
 	 */
 	static factory(allSegments) {
 		const ringsOut = [];
 
 		for (let i = 0, iMax = allSegments.length; i < iMax; i++) {
 			const segment = allSegments[i];
-			if (!segment.isInResult() || segment.ringOut) continue;
+			if (!segment.isInResult() || segment.ringOut != null) continue;
 
-			let prevEvent = null;
+			/** @type {SweepEvent} */
+			let prevEvent;
 			let event = segment.leftSE;
 			let nextEvent = segment.rightSE;
 			const events = [event];
@@ -59,7 +57,8 @@ export class RingOut {
 					}
 
 					/* We must have an intersection. Check for a completed loop */
-					let indexLE = null;
+					/** @type {number | undefined} */
+					let indexLE;
 					for (let j = 0, jMax = intersectionLEs.length; j < jMax; j++) {
 						if (intersectionLEs[j].point === event.point) {
 							indexLE = j;
@@ -67,7 +66,7 @@ export class RingOut {
 						}
 					}
 					/* Found a completed loop. Cut that off and make a ring */
-					if (indexLE !== null) {
+					if (indexLE != null) {
 						const intersectionLE = intersectionLEs.splice(indexLE)[0];
 						const ringEvents = events.splice(intersectionLE.index);
 						ringEvents.unshift(ringEvents[0].otherSE);
@@ -97,45 +96,52 @@ export class RingOut {
 	 */
 	constructor(events) {
 		this.events = events;
-		for (let i = 0, iMax = events.length; i < iMax; i++) {
-			events[i].segment.ringOut = this;
-		}
 
-		/** @type {PolyOut | null} */
-		this.poly = null;
+		events.forEach(event => {
+			event.segment.ringOut = this;
+		});
+
+		/** @type {PolyOut | undefined} */
+		this.poly = undefined;
 	}
 
+	/** @returns {import('./geom-in.js').Ring | undefined} */
 	getGeom() {
 		// Remove superfluous points (ie extra points along a straight line),
 		let prevPt = this.events[0].point;
+
 		const points = [prevPt];
-		for (let i = 1, iMax = this.events.length - 1; i < iMax; i++) {
+
+		for (let i = 1; i < this.events.length - 1; i++) {
 			const pt = this.events[i].point;
 			const nextPt = this.events[i + 1].point;
-			if (precision.orient(pt, prevPt, nextPt) === 0) continue;
-			points.push(pt);
-			prevPt = pt;
+			if (precision.orient(pt, prevPt, nextPt) !== 0) {
+				points.push(pt);
+				prevPt = pt;
+			}
 		}
 
 		// ring was all (within rounding error of angle calc) colinear points
-		if (points.length === 1) return null;
+		if (points.length === 1) {
+			return;
+		}
 
 		// check if the starting point is necessary
 		const pt = points[0];
 		const nextPt = points[1];
-		if (precision.orient(pt, prevPt, nextPt) === 0) points.shift();
-
-		points.push(points[0]);
-		const step = this.isExteriorRing() ? 1 : -1;
-		const iStart = this.isExteriorRing() ? 0 : points.length - 1;
-		const iEnd = this.isExteriorRing() ? points.length : -1;
-		/** @type {import('./geom-in.js').Ring} */
-		const orderedPoints = [];
-		for (let i = iStart; i !== iEnd; i += step) {
-			orderedPoints.push([points[i].x.toNumber(), points[i].y.toNumber()]);
+		if (precision.orient(pt, prevPt, nextPt) === 0) {
+			points.shift();
 		}
 
-		return orderedPoints;
+		points.push(points[0]);
+
+		const isExteriorRing = this.isExteriorRing();
+
+		if (!isExteriorRing) {
+			points.reverse();
+		}
+
+		return points.map(point => [point.x.toNumber(), point.y.toNumber()]);
 	}
 
 	/**
@@ -151,57 +157,61 @@ export class RingOut {
 	}
 
 	/**
-	 * @returns {RingOut | null | undefined}
+	 * @returns {RingOut | undefined}
 	 */
 	enclosingRing() {
 		if (this._enclosingRing === undefined) {
-			this._enclosingRing = this._calcEnclosingRing();
+			/** @type {RingOut | null} */
+			this._enclosingRing = this._calcEnclosingRing() ?? null;
 		}
 
-		return this._enclosingRing;
+		return this._enclosingRing ?? undefined;
 	}
 
 	/**
 	 * Returns the ring that encloses this one, if any
-	 * @returns {RingOut | null | undefined}
+	 * @returns {RingOut | undefined}
 	 */
 	_calcEnclosingRing() {
 		// start with the ealier sweep line event so that the prevSeg
 		// chain doesn't lead us inside of a loop of ours
-		let leftMostEvt = this.events[0];
-		for (let i = 1, iMax = this.events.length; i < iMax; i++) {
-			const evt = this.events[i];
-			if (SweepEvent.compare(leftMostEvt, evt) > 0) leftMostEvt = evt;
-		}
+		/** @type {SweepEvent} */
+		const leftMostEvt = this.events.reduce(
+			(a, b) => SweepEvent.compare(a, b) > 0 ? b : a
+		);
 
-		/** @type {import('./segment.js').default | null | undefined} */
-		let prevSeg = leftMostEvt.segment.prevInResult();
-		/** @type {import('./segment.js').default | null | undefined} */
-		let prevPrevSeg = prevSeg ? prevSeg.prevInResult() : null;
+		/** @type {import('./segment.js').default | undefined} */
+		let prevSeg = leftMostEvt.segment.prevInResult() ?? undefined;
+		/** @type {import('./segment.js').default | undefined} */
+		let prevPrevSeg = prevSeg?.prevInResult() ?? undefined;
 
 		for (;;) {
 			// no segment found, thus no ring can enclose us
-			if (!prevSeg) return null;
+			if (prevSeg == null) {
+				return;
+			}
 
 			// no segments below prev segment found, thus the ring of the prev
 			// segment must loop back around and enclose us
-			if (!prevPrevSeg) return prevSeg.ringOut;
+			if (prevPrevSeg == null) {
+				return prevSeg.ringOut;
+			}
 
 			// if the two segments are of different rings, the ring of the prev
 			// segment must either loop around us or the ring of the prev prev
 			// seg, which would make us and the ring of the prev peers
 			if (prevPrevSeg.ringOut !== prevSeg.ringOut) {
-				if (prevPrevSeg.ringOut?.enclosingRing() !== prevSeg.ringOut) {
-					return prevSeg.ringOut;
-				}
-
-				return prevSeg.ringOut?.enclosingRing();
+				// @ts-ignore
+				return prevPrevSeg.ringOut.enclosingRing() !== prevSeg.ringOut
+					? prevSeg.ringOut
+					// @ts-ignore
+					: prevSeg.ringOut.enclosingRing();
 			}
 
 			// two segments are from the same ring, so this was a penisula
 			// of that ring. iterate downward, keep searching
-			prevSeg = prevPrevSeg.prevInResult();
-			prevPrevSeg = prevSeg ? prevSeg.prevInResult() : null;
+			prevSeg = prevPrevSeg.prevInResult() ?? undefined;
+			prevPrevSeg = prevSeg?.prevInResult() ?? undefined;
 		}
 	}
 }
@@ -226,20 +236,26 @@ export class PolyOut {
 		ring.poly = this;
 	}
 
+	/** @return {import('./geom-in.js').Ring[] | undefined} */
 	getGeom() {
 		const geom0 = this.exteriorRing.getGeom();
+
 		// exterior ring was all (within rounding error of angle calc) colinear points
-		if (geom0 === null) return null;
-		/** @type {import('./geom-in.js').Poly} */
-		const geom = [geom0];
-		for (let i = 0, iMax = this.interiorRings.length; i < iMax; i++) {
-			const ringGeom = this.interiorRings[i].getGeom();
-			// interior ring was all (within rounding error of angle calc) colinear points
-			if (ringGeom === null) continue;
-			geom.push(ringGeom);
+		if (geom0 == null) {
+			return;
 		}
 
-		return geom;
+		return [geom0].concat(
+			this.interiorRings
+				.map(ring => ring.getGeom())
+				.filter(
+					/**
+					 * @param {import('./geom-in.js').Ring | undefined} geom
+					 * @returns {geom is import('./geom-in.js').Ring}
+					 */
+					geom => geom != null
+				)
+		);
 	}
 }
 
@@ -251,40 +267,45 @@ export class MultiPolyOut {
 		/** @type {RingOut[]} */
 		this.rings = rings;
 		/** @type {PolyOut[]} */
-		this.polys = this._composePolys(rings);
-	}
+		this.polys = rings
+			.map(ring => {
+				if (ring.poly) {
+					return;
+				}
 
-	getGeom() {
-		/** @type {import('./geom-in.js').MultiPoly} */
-		const geom = [];
-		for (let i = 0, iMax = this.polys.length; i < iMax; i++) {
-			const polyGeom = this.polys[i].getGeom();
-			// exterior ring was all (within rounding error of angle calc) colinear points
-			if (polyGeom === null) continue;
-			geom.push(polyGeom);
-		}
+				if (ring.isExteriorRing()) {
+					return new PolyOut(ring);
+				}
 
-		return geom;
-	}
-
-	/**
-	 * @param {RingOut[]} rings
-	 * @returns
-	 */
-	// eslint-disable-next-line class-methods-use-this
-	_composePolys(rings) {
-		const polys = [];
-		for (let i = 0, iMax = rings.length; i < iMax; i++) {
-			const ring = rings[i];
-			if (ring.poly) continue;
-			if (ring.isExteriorRing()) polys.push(new PolyOut(ring));
-			else {
+				// FIXME: can enclosingRing really be nullish?
 				const enclosingRing = ring.enclosingRing();
-				if (!enclosingRing?.poly) polys.push(new PolyOut(/** @type {RingOut} */(enclosingRing)));
-				enclosingRing?.poly?.addInterior(ring);
-			}
-		}
+				const poly = !enclosingRing?.poly
+					? new PolyOut(/** @type {RingOut} */(enclosingRing))
+					: undefined;
 
-		return polys;
+				enclosingRing?.poly?.addInterior(ring);
+
+				return poly;
+			})
+			.filter(
+				/**
+				 * @param {PolyOut | undefined} ring
+				 * @returns {ring is PolyOut}
+				 */
+				ring => ring != null
+			);
+	}
+
+	/** @returns {import('./geom-in.js').Poly[]} */
+	getGeom() {
+		return this.polys
+			.map(poly => poly.getGeom())
+			.filter(
+				/**
+				 * @param {import('./geom-in.js').Poly | undefined} polyGeom
+				 * @returns {polyGeom is import('./geom-in.js').Poly}
+				 */
+				polyGeom => polyGeom != null
+			);
 	}
 }

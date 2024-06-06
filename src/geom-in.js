@@ -22,8 +22,13 @@ export class RingIn {
 			throw new Error('Input geometry is not a valid Polygon or MultiPolygon');
 		}
 
+		/** @type {PolyIn} */
 		this.poly = poly;
+
+		/** @type {Boolean} */
 		this.isExterior = isExterior;
+
+		/** @type {Segment[]} */
 		this.segments = [];
 
 		if (
@@ -36,6 +41,8 @@ export class RingIn {
 		const firstPoint = /** @type {import('./sweep-event.js').Point} */(
 			precision.snap({ x: new BigNumber(geomRing[0][0]), y: new BigNumber(geomRing[0][1]) })
 		);
+
+		/** @type {import('./bbox.js').Bbox} */
 		this.bbox = {
 			ll: { x: firstPoint.x, y: firstPoint.y },
 			ur: { x: firstPoint.x, y: firstPoint.y }
@@ -49,18 +56,24 @@ export class RingIn {
 			) {
 				throw new Error('Input geometry is not a valid Polygon or MultiPolygon');
 			}
+
 			const point = /** @type {import('./sweep-event.js').Point} */(
 				precision.snap({ x: new BigNumber(geomRing[i][0]), y: new BigNumber(geomRing[i][1]) })
 			);
+
 			// skip repeated points
 			if (point.x.eq(prevPoint.x) && point.y.eq(prevPoint.y)) continue;
+
 			this.segments.push(Segment.fromRing(prevPoint, point, this));
+
 			if (point.x.isLessThan(this.bbox.ll.x)) this.bbox.ll.x = point.x;
 			if (point.y.isLessThan(this.bbox.ll.y)) this.bbox.ll.y = point.y;
 			if (point.x.isGreaterThan(this.bbox.ur.x)) this.bbox.ur.x = point.x;
 			if (point.y.isGreaterThan(this.bbox.ur.y)) this.bbox.ur.y = point.y;
+
 			prevPoint = point;
 		}
+
 		// add segment from last to first if last is not the same as first
 		if (!firstPoint.x.eq(prevPoint.x) || !firstPoint.y.eq(prevPoint.y)) {
 			this.segments.push(Segment.fromRing(prevPoint, firstPoint, this));
@@ -68,14 +81,7 @@ export class RingIn {
 	}
 
 	getSweepEvents() {
-		const sweepEvents = [];
-		for (let i = 0, iMax = this.segments.length; i < iMax; i++) {
-			const segment = this.segments[i];
-			sweepEvents.push(segment.leftSE);
-			sweepEvents.push(segment.rightSE);
-		}
-
-		return sweepEvents;
+		return this.segments.flatMap(segment => [segment.leftSE, segment.rightSE]);
 	}
 }
 
@@ -88,34 +94,37 @@ export class PolyIn {
 		if (!Array.isArray(geomPoly)) {
 			throw new Error('Input geometry is not a valid Polygon or MultiPolygon');
 		}
+
+		/** @type {RingIn} */
 		this.exteriorRing = new RingIn(geomPoly[0], this, true);
-		// copy by value
+
+		/** @type {import('./bbox.js').Bbox} */
 		this.bbox = {
 			ll: { x: this.exteriorRing.bbox.ll.x, y: this.exteriorRing.bbox.ll.y },
 			ur: { x: this.exteriorRing.bbox.ur.x, y: this.exteriorRing.bbox.ur.y }
 		};
+
+		/** @type {RingIn[]} */
 		this.interiorRings = [];
-		for (let i = 1, iMax = geomPoly.length; i < iMax; i++) {
+
+		for (let i = 1; i < geomPoly.length; i++) {
 			const ring = new RingIn(geomPoly[i], this, false);
+
 			if (ring.bbox.ll.x.isLessThan(this.bbox.ll.x)) this.bbox.ll.x = ring.bbox.ll.x;
 			if (ring.bbox.ll.y.isLessThan(this.bbox.ll.y)) this.bbox.ll.y = ring.bbox.ll.y;
 			if (ring.bbox.ur.x.isGreaterThan(this.bbox.ur.x)) this.bbox.ur.x = ring.bbox.ur.x;
 			if (ring.bbox.ur.y.isGreaterThan(this.bbox.ur.y)) this.bbox.ur.y = ring.bbox.ur.y;
+
 			this.interiorRings.push(ring);
 		}
+
+		/** @type {MultiPolyIn} */
 		this.multiPoly = multiPoly;
 	}
 
 	getSweepEvents() {
-		const sweepEvents = this.exteriorRing.getSweepEvents();
-		for (let i = 0, iMax = this.interiorRings.length; i < iMax; i++) {
-			const ringSweepEvents = this.interiorRings[i].getSweepEvents();
-			for (let j = 0, jMax = ringSweepEvents.length; j < jMax; j++) {
-				sweepEvents.push(ringSweepEvents[j]);
-			}
-		}
-
-		return sweepEvents;
+		return this.exteriorRing.getSweepEvents()
+			.concat(this.interiorRings.flatMap(ring => ring.getSweepEvents()));
 	}
 }
 
@@ -131,13 +140,15 @@ export class MultiPolyIn {
 
 		try {
 			// if the input looks like a polygon, convert it to a multipolygon
-			if (typeof geom[0][0][0] === 'number') geom = [/** @type {Poly} */(geom)];
+			if (typeof geom[0][0][0] === 'number') {
+				geom = [/** @type {Poly} */(geom)];
+			}
 		} catch (ex) {
 			// The input is either malformed or has empty arrays.
 			// In either case, it will be handled later on.
 		}
 
-		this.polys = [];
+		/** @type {import('./bbox.js').Bbox} */
 		this.bbox = {
 			ll: {
 				x: new BigNumber(Number.POSITIVE_INFINITY),
@@ -148,26 +159,24 @@ export class MultiPolyIn {
 				y: new BigNumber(Number.NEGATIVE_INFINITY)
 			}
 		};
-		for (let i = 0, iMax = geom.length; i < iMax; i++) {
-			const poly = new PolyIn(/** @type {Poly} */(geom[i]), this);
+
+		/** @type {PolyIn[]} */
+		this.polys = geom.map(geom => {
+			const poly = new PolyIn(/** @type {Poly} */(geom), this);
+
 			if (poly.bbox.ll.x.isLessThan(this.bbox.ll.x)) this.bbox.ll.x = poly.bbox.ll.x;
 			if (poly.bbox.ll.y.isLessThan(this.bbox.ll.y)) this.bbox.ll.y = poly.bbox.ll.y;
 			if (poly.bbox.ur.x.isGreaterThan(this.bbox.ur.x)) this.bbox.ur.x = poly.bbox.ur.x;
 			if (poly.bbox.ur.y.isGreaterThan(this.bbox.ur.y)) this.bbox.ur.y = poly.bbox.ur.y;
-			this.polys.push(poly);
-		}
+
+			return poly;
+		});
+
+		/** @type {boolean} */
 		this.isSubject = isSubject;
 	}
 
 	getSweepEvents() {
-		const sweepEvents = [];
-		for (let i = 0, iMax = this.polys.length; i < iMax; i++) {
-			const polySweepEvents = this.polys[i].getSweepEvents();
-			for (let j = 0, jMax = polySweepEvents.length; j < jMax; j++) {
-				sweepEvents.push(polySweepEvents[j]);
-			}
-		}
-
-		return sweepEvents;
+		return this.polys.flatMap(poly => poly.getSweepEvents());
 	}
 }

@@ -382,7 +382,7 @@ describe("ring", () => {
 
     const ring = RingOut.factory([seg1, seg2, seg3])[0]
 
-    expect(ring.enclosingRing()).toBeNull()
+    expect(ring.enclosingRing()).toBeUndefined()
     expect(ring.isExteriorRing()).toBe(true)
     expect(ring.getGeom()).toEqual([
       [0, 0],
@@ -490,15 +490,15 @@ describe("ring", () => {
 
     const ring = RingOut.factory([seg1, seg2, seg3, seg4])[0]
 
-    expect(ring.getGeom()).toEqual(null)
+    expect(ring.getGeom()).toBeUndefined()
   })
 })
 
 describe("poly", () => {
   test("basic", () => {
-    const ring1 = (<Partial<RingOut>>{poly: null, getGeom: () => 1 as unknown as number[][]}) as RingOut
-    const ring2 = (<Partial<RingOut>>{poly: null, getGeom: () => 2 as unknown as number[][]}) as RingOut
-    const ring3 = (<Partial<RingOut>>{poly: null, getGeom: () => 3 as unknown as number[][]}) as RingOut
+    const ring1 = (<Partial<RingOut>>{poly: undefined, getGeom: () => 1 as unknown as number[][]}) as RingOut
+    const ring2 = (<Partial<RingOut>>{poly: undefined, getGeom: () => 2 as unknown as number[][]}) as RingOut
+    const ring3 = (<Partial<RingOut>>{poly: undefined, getGeom: () => 3 as unknown as number[][]}) as RingOut
 
     const poly = new PolyOut(ring1)
     poly.addInterior(ring2)
@@ -512,18 +512,18 @@ describe("poly", () => {
   })
 
   test("has all colinear exterior ring", () => {
-    const ring1 = (<Partial<RingOut>>{poly: null, getGeom: () => null}) as RingOut
+    const ring1 = (<Partial<RingOut>>{poly: undefined, getGeom: () => undefined}) as RingOut
     const poly = new PolyOut(ring1)
 
     expect(ring1.poly).toBe(poly)
 
-    expect(poly.getGeom()).toEqual(null)
+    expect(poly.getGeom()).toBeUndefined()
   })
 
   test("has all colinear interior ring", () => {
-    const ring1 = (<Partial<RingOut>>{poly: null, getGeom: () => 1 as unknown as number[][]}) as RingOut
-    const ring2 = (<Partial<RingOut>>{poly: null, getGeom: () => null}) as RingOut
-    const ring3 = (<Partial<RingOut>>{poly: null, getGeom: () => 3 as unknown as number[][]}) as RingOut
+    const ring1 = (<Partial<RingOut>>{poly: undefined, getGeom: () => 1 as unknown as number[][]}) as RingOut
+    const ring2 = (<Partial<RingOut>>{poly: undefined, getGeom: () => undefined}) as RingOut
+    const ring3 = (<Partial<RingOut>>{poly: undefined, getGeom: () => 3 as unknown as number[][]}) as RingOut
 
     const poly = new PolyOut(ring1)
     poly.addInterior(ring2)
@@ -549,7 +549,7 @@ describe("multipoly", () => {
 
   test("has poly with all colinear exterior ring", () => {
     const multipoly = new MultiPolyOut([])
-    const poly1 = (<Partial<PolyOut>>{getGeom: () => null}) as PolyOut
+    const poly1 = (<Partial<PolyOut>>{getGeom: () => undefined}) as PolyOut
     const poly2 = (<Partial<PolyOut>>{getGeom: () => 1 as unknown as number[][][]}) as PolyOut
     multipoly.polys = [poly1, poly2]
 
