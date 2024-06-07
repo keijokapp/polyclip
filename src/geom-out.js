@@ -204,6 +204,10 @@ export class RingOut {
 			// segment must either loop around us or the ring of the prev prev
 			// seg, which would make us and the ring of the prev peers
 			if (prevPrevSeg.ringOut !== prevSeg.ringOut) {
+				if (prevSeg.ringOut === this) {
+					return;
+				}
+
 				// @ts-ignore
 				return prevPrevSeg.ringOut.enclosingRing() !== prevSeg.ringOut
 					? prevSeg.ringOut
