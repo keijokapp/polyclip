@@ -3,7 +3,7 @@
 import { SplayTreeSet } from 'splaytree-ts';
 import { getBboxOverlap } from './bbox.js';
 import * as geomIn from './geom-in.js';
-import * as geomOut from './geom-out.js';
+import renderMultipolygon from './geom-out.js';
 import { precision } from './precision.js';
 import SweepEvent from './sweep-event.js';
 import SweepLine from './sweep-line.js';
@@ -24,9 +24,9 @@ export function getCurrentOperationMultiPolyCount() {
 
 /**
  * @param {string} type
- * @param {import('./geom-in.js').Geom} geom
- * @param {import('./geom-in.js').Geom[]} moreGeoms
- * @returns {import('./geom-in.js').MultiPoly}
+ * @param {import('polyclip').Geom} geom
+ * @param {import('polyclip').Geom[]} moreGeoms
+ * @returns {import('polyclip').MultiPolygon}
  */
 export function runOperation(type, geom, moreGeoms) {
 	currentOperationType = type;
@@ -88,9 +88,5 @@ export function runOperation(type, geom, moreGeoms) {
 	// free some memory we don't need anymore
 	precision.reset();
 
-	/* Collect and compile segments we're keeping into a multipolygon */
-	const ringsOut = geomOut.RingOut.factory(sweepLine.segments);
-	const result = new geomOut.MultiPolyOut(ringsOut);
-
-	return result.getGeom();
+	return renderMultipolygon(sweepLine.segments);
 }

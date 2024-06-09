@@ -114,19 +114,6 @@ export default class SweepEvent {
 		}
 	}
 
-	getAvailableLinkedEvents() {
-		// point.events is always of length 2 or greater
-		const events = [];
-		for (let i = 0, iMax = this.point.events.length; i < iMax; i++) {
-			const evt = this.point.events[i];
-			if (evt !== this && !evt.segment.ringOut && evt.segment.isInResult()) {
-				events.push(evt);
-			}
-		}
-
-		return events;
-	}
-
 	/**
 	 * Returns a comparator function for sorting linked events that will
 	 * favor the event that will give us the smallest left-side angle.

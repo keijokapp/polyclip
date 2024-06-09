@@ -165,8 +165,6 @@ export default class Segment {
 		/** @type {number[] | null} */
 		this.windings = windings;
 
-		/** @type {import('./geom-out.js').RingOut | undefined} */
-		this.ringOut = undefined;
 		/** @type {Segment | undefined} */
 		this.consumedBy = undefined;
 		/** @type {Segment | null | undefined} */

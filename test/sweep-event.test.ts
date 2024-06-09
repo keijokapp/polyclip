@@ -183,7 +183,7 @@ describe("constructor", () => {
 })
 
 describe("sweep event link", () => {
-  test("no linked events", () => {
+  test.skip("no linked events", () => {
     const s1 = new SweepEvent(<Point>{x: new BigNumber(0), y: new BigNumber(0)}, undefined!)
     expect(s1.point.events).toEqual([s1])
     expect(s1.getAvailableLinkedEvents()).toEqual([])
@@ -235,7 +235,7 @@ describe("sweep event link", () => {
     expect(() => s1.link(s2)).toThrow()
   })
 
-  test("unavailable linked events do not show up", () => {
+  test.skip("unavailable linked events do not show up", () => {
     const p1 = <Point>{x: new BigNumber(0), y: new BigNumber(0)}
     const se = new SweepEvent(p1, undefined!)
     const seAlreadyProcessed = new SweepEvent(p1, undefined!)
@@ -245,7 +245,7 @@ describe("sweep event link", () => {
     expect(se.getAvailableLinkedEvents()).toEqual([])
   })
 
-  test("available linked events show up", () => {
+  test.skip("available linked events show up", () => {
     const p1 = <Point>{x: new BigNumber(0), y: new BigNumber(0)}
     const se = new SweepEvent(p1, undefined!)
     const seOkay = new SweepEvent(p1, undefined!)
@@ -253,7 +253,7 @@ describe("sweep event link", () => {
     expect(se.getAvailableLinkedEvents()).toEqual([seOkay])
   })
 
-  test("link goes both ways", () => {
+  test.skip("link goes both ways", () => {
     const p1 = <Point>{x: new BigNumber(0), y: new BigNumber(0)}
     const seOkay1 = new SweepEvent(p1, undefined!)
     const seOkay2 = new SweepEvent(p1, undefined!)
