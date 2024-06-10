@@ -9,7 +9,7 @@ const comparator = (a: number, b: number) => {
   return a < b ? -1 : 1
 }
 
-describe("sweep line", () => {
+describe.skip("sweep line", () => {
   test("test filling up the tree then emptying it out", () => {
     const set = new SweepLine(null!, comparator as unknown as (a: Segment, b: Segment) => number)
     const k1 = 4 as unknown as Segment

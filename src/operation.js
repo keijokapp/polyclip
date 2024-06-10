@@ -1,12 +1,10 @@
 // @ts-check
 
-import { SplayTreeSet } from 'splaytree-ts';
 import { getBboxOverlap } from './bbox.js';
 import * as geomIn from './geom-in.js';
 import renderMultipolygon from './geom-out.js';
 import { precision } from './precision.js';
-import SweepEvent from './sweep-event.js';
-import SweepLine from './sweep-line.js';
+import sweepLine from './sweep-line.js';
 
 /**
  * @typedef {'union' | 'difference' | 'intersection' | 'xor'} OperationType
@@ -53,26 +51,11 @@ export default function runOperation(type, geom, moreGeoms) {
 		}
 	}
 
-	/* Put segment endpoints in a priority queue */
-	const queue = new SplayTreeSet(SweepEvent.compare);
-	queue.addAll(multipolys.flatMap(poly => poly.getSweepEvents()));
-
 	/* Pass the sweep line over those endpoints */
-	const sweepLine = new SweepLine(queue);
-	while (queue.size !== 0) {
-		const evt = queue.first();
-		queue.delete(evt);
-
-		const newEvents = sweepLine.process(evt);
-		newEvents.forEach(evt => {
-			if (evt.consumedBy === undefined) {
-				queue.add(evt);
-			}
-		});
-	}
+	const segments = sweepLine(multipolys);
 
 	// free some memory we don't need anymore
 	precision.reset();
 
-	return renderMultipolygon(sweepLine.segments, type, multipolys.length);
+	return renderMultipolygon(segments, type, multipolys.length);
 }
