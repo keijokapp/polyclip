@@ -8,36 +8,22 @@ import { precision } from './precision.js';
 import SweepEvent from './sweep-event.js';
 import SweepLine from './sweep-line.js';
 
-/** @type {string} */
-let currentOperationType;
-
-/** @type {number} */
-let currentOprationMultiPolyCount;
-
-export function getCurrentOperationType() {
-	return currentOperationType;
-}
-
-export function getCurrentOperationMultiPolyCount() {
-	return currentOprationMultiPolyCount;
-}
+/**
+ * @typedef {'union' | 'difference' | 'intersection' | 'xor'} OperationType
+ */
 
 /**
- * @param {string} type
+ * @param {OperationType} type
  * @param {import('polyclip').Geom} geom
  * @param {import('polyclip').Geom[]} moreGeoms
  * @returns {import('polyclip').MultiPolygon}
  */
-export function runOperation(type, geom, moreGeoms) {
-	currentOperationType = type;
-
+export default function runOperation(type, geom, moreGeoms) {
 	/* Convert inputs to MultiPoly objects */
 	const multipolys = [new geomIn.MultiPolyIn(geom, true)];
 	for (let i = 0, iMax = moreGeoms.length; i < iMax; i++) {
 		multipolys.push(new geomIn.MultiPolyIn(moreGeoms[i], false));
 	}
-
-	currentOprationMultiPolyCount = multipolys.length;
 
 	/* BBox optimization for difference operation
 	 * If the bbox of a multipolygon that's part of the clipping doesn't
@@ -88,5 +74,5 @@ export function runOperation(type, geom, moreGeoms) {
 	// free some memory we don't need anymore
 	precision.reset();
 
-	return renderMultipolygon(sweepLine.segments);
+	return renderMultipolygon(sweepLine.segments, type, multipolys.length);
 }

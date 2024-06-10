@@ -1,7 +1,6 @@
 // @ts-check
 
 import { getBboxOverlap, isInBbox } from './bbox.js';
-import { getCurrentOperationMultiPolyCount, getCurrentOperationType } from './operation.js';
 import { precision } from './precision.js';
 import SweepEvent from './sweep-event.js';
 import { intersection } from './vector.js';
@@ -490,15 +489,17 @@ export default class Segment {
 
 	/**
 	 * The first segment previous segment chain that is in the result
-	 * @returns {Segment | null | undefined}
+	 * @param {import('./geom-out.js').Context} context
+	 * @returns {Segment | undefined}
 	 */
-	prevInResult() {
-		if (this._prevInResult !== undefined) return this._prevInResult;
-		if (!this.prev) this._prevInResult = null;
-		else if (this.prev.isInResult()) this._prevInResult = this.prev;
-		else this._prevInResult = this.prev.prevInResult();
+	prevInResult(context) {
+		if (this._prevInResult === undefined) {
+			if (!this.prev) this._prevInResult = null;
+			else if (this.prev.isInResult(context)) this._prevInResult = this.prev;
+			else this._prevInResult = this.prev.prevInResult(context);
+		}
 
-		return this._prevInResult;
+		return this._prevInResult ?? undefined;
 	}
 
 	/**
@@ -574,8 +575,12 @@ export default class Segment {
 		return this._afterState;
 	}
 
-	/* Is this segment part of the final result? */
-	isInResult() {
+	/**
+	 * Is this segment part of the final result?
+	 * @param {import('./geom-out.js').Context} context
+	 * @returns {boolean}
+	 */
+	isInResult({ operationType, multipolygonCount }) {
 		// if we've been consumed, we're not in the result
 		if (this.consumedBy) return false;
 
@@ -584,7 +589,7 @@ export default class Segment {
 		const mpsBefore = this.beforeState().multiPolys;
 		const mpsAfter = this.afterState().multiPolys;
 
-		switch (getCurrentOperationType()) {
+		switch (operationType) {
 		case 'union': {
 			// UNION - included iff:
 			//  * On one side of us there is 0 poly interiors AND
@@ -609,7 +614,7 @@ export default class Segment {
 				least = mpsAfter.length;
 				most = mpsBefore.length;
 			}
-			this._isInResult = most === getCurrentOperationMultiPolyCount() && least < most;
+			this._isInResult = most === multipolygonCount && least < most;
 			break;
 		}
 

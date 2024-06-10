@@ -4,15 +4,26 @@ import { precision } from './precision.js';
 import SweepEvent from './sweep-event.js';
 
 /**
+ * @typedef {{
+ *   enclosingRings: Map<SweepEvent[], SweepEvent[] | undefined>,
+ *   multipolygonCount: number,
+ *   operationType: import('./operation.js').OperationType
+ *   segmentRings: Map<import('./segment.js').default, SweepEvent[]>
+ * }} Context
+ */
+
+/**
  * Given the segments from the sweep line pass, compute & return a series
  * of closed rings from all the segments marked to be part of the result
  * @param {import('./segment.js').default[]} allSegments
- * @param {Map<import('./segment.js').default, SweepEvent[]>} segmentRings
+ * @param {Context} context
  * @returns {SweepEvent[][]}
  */
-function segmentsToRings(allSegments, segmentRings) {
+function segmentsToRings(allSegments, context) {
+	const { segmentRings } = context;
+
 	return allSegments.flatMap(segment => {
-		if (!segment.isInResult() || segmentRings.has(segment)) {
+		if (!segment.isInResult(context) || segmentRings.has(segment)) {
 			return [];
 		}
 
@@ -49,7 +60,9 @@ function segmentsToRings(allSegments, segmentRings) {
 			for (;;) {
 				const availableLEs = event.point.events.filter(
 					// eslint-disable-next-line no-loop-func
-					evt => evt !== event && !segmentRings.has(evt.segment) && evt.segment.isInResult()
+					evt => evt !== event
+						&& !segmentRings.has(evt.segment)
+						&& evt.segment.isInResult(context)
 				);
 
 				/* Did we hit a dead end? This shouldn't happen. Indicates some earlier
@@ -110,13 +123,14 @@ function segmentsToRings(allSegments, segmentRings) {
 
 /**
  * @param {SweepEvent[]} events
- * @param {Map<import('./segment.js').default, SweepEvent[]>} segmentRings
- * @param {Map<SweepEvent[], SweepEvent[] | undefined>} enclosingRings
+ * @param {Context} context
  * @returns {SweepEvent[] | undefined}
  */
-function enclosingRing(events, segmentRings, enclosingRings) {
+function enclosingRing(events, context) {
+	const { enclosingRings } = context;
+
 	if (!enclosingRings.has(events)) {
-		const enclosingRing = calcEnclosingRing(events, segmentRings, enclosingRings);
+		const enclosingRing = calcEnclosingRing(events, context);
 
 		enclosingRings.set(events, enclosingRing);
 
@@ -128,11 +142,12 @@ function enclosingRing(events, segmentRings, enclosingRings) {
 
 /**
  * @param {SweepEvent[]} events
- * @param {Map<import('./segment.js').default, SweepEvent[]>} segmentRings
- * @param {Map<SweepEvent[], SweepEvent[] | undefined>} enclosingRings
+ * @param {Context} context
  * @returns {SweepEvent[] | undefined}
  */
-function calcEnclosingRing(events, segmentRings, enclosingRings) {
+function calcEnclosingRing(events, context) {
+	const { segmentRings } = context;
+
 	// start with the ealier sweep line event so that the prevSeg
 	// chain doesn't lead us inside of a loop of ours
 	/** @type {SweepEvent} */
@@ -141,9 +156,9 @@ function calcEnclosingRing(events, segmentRings, enclosingRings) {
 	);
 
 	/** @type {import('./segment.js').default | undefined} */
-	let prevSeg = leftMostEvt.segment.prevInResult() ?? undefined;
+	let prevSeg = leftMostEvt.segment.prevInResult(context);
 	/** @type {import('./segment.js').default | undefined} */
-	let prevPrevSeg = prevSeg?.prevInResult() ?? undefined;
+	let prevPrevSeg = prevSeg?.prevInResult(context);
 
 	for (;;) {
 		// no segment found, thus no ring can enclose us
@@ -168,30 +183,29 @@ function calcEnclosingRing(events, segmentRings, enclosingRings) {
 			const prevPrevSegRing = /** @type {SweepEvent[]} */(segmentRings.get(prevPrevSeg));
 			const prevSegRing = /** @type {SweepEvent[]} */(segmentRings.get(prevSeg));
 
-			return enclosingRing(prevPrevSegRing, segmentRings, enclosingRings) !== prevSegRing
+			return enclosingRing(prevPrevSegRing, context) !== prevSegRing
 				? segmentRings.get(prevSeg)
-				: enclosingRing(prevSegRing, segmentRings, enclosingRings);
+				: enclosingRing(prevSegRing, context);
 		}
 
 		// two segments are from the same ring, so this was a penisula
 		// of that ring. iterate downward, keep searching
-		prevSeg = prevPrevSeg.prevInResult() ?? undefined;
-		prevPrevSeg = prevSeg?.prevInResult() ?? undefined;
+		prevSeg = prevPrevSeg.prevInResult(context);
+		prevPrevSeg = prevSeg?.prevInResult(context);
 	}
 }
 
 /**
  * @param {SweepEvent[]} events
- * @param {Map<import('./segment.js').default, SweepEvent[]>} segmentRings
- * @param {Map<SweepEvent[], SweepEvent[] | undefined>} enclosingRings
+ * @param {Context} context
  * @returns {boolean}
  */
-function isExteriorRing(events, segmentRings, enclosingRings) {
+function isExteriorRing(events, context) {
 	let i = 0;
-	let enclosing = enclosingRing(events, segmentRings, enclosingRings);
+	let enclosing = enclosingRing(events, context);
 
 	while (enclosing) {
-		enclosing = enclosingRing(enclosing, segmentRings, enclosingRings);
+		enclosing = enclosingRing(enclosing, context);
 		i++;
 	}
 
@@ -200,11 +214,10 @@ function isExteriorRing(events, segmentRings, enclosingRings) {
 
 /**
  * @param {SweepEvent[]} events
- * @param {Map<import('./segment.js').default, SweepEvent[]>} segmentRings
- * @param {Map<SweepEvent[], SweepEvent[] | undefined>} enclosingRings
+ * @param {Context} context
  * @returns {[number, number][] | undefined}
  */
-function renderRing(events, segmentRings, enclosingRings) {
+function renderRing(events, context) {
 	// Remove superfluous points (ie extra points along a straight line),
 	let prevPt = events[0].point;
 
@@ -233,7 +246,7 @@ function renderRing(events, segmentRings, enclosingRings) {
 
 	points.push(points[0]);
 
-	const isExterior = isExteriorRing(events, segmentRings, enclosingRings);
+	const isExterior = isExteriorRing(events, context);
 
 	if (!isExterior) {
 		points.reverse();
@@ -244,24 +257,30 @@ function renderRing(events, segmentRings, enclosingRings) {
 
 /**
  * @param {import('./segment.js').default[]} segments
+ * @param {import('./operation.js').OperationType} type
+ * @param {number} multipolygonCount
  * @returns {import('polyclip').MultiPolygon}
  */
-export default function renderMultipolygon(segments) {
-	/** @type {Map<import('./segment.js').default, SweepEvent[]>} */
-	const segmentRings = new Map();
-	/** @type {Map<SweepEvent[], SweepEvent[] | undefined>} */
-	const enclosingRings = new Map();
+export default function renderMultipolygon(segments, type, multipolygonCount) {
+	/** @type {Context} */
+	const context = {
+		enclosingRings: new Map(),
+		multipolygonCount,
+		operationType: type,
+		segmentRings: new Map()
+	};
+
 	/** @type {Map<SweepEvent[], Array<[number, number][] | undefined>>} */
 	const polygons = new Map();
 
-	return segmentsToRings(segments, segmentRings)
+	return segmentsToRings(segments, context)
 		.map(ring => {
 			if (polygons.has(ring)) {
 				return;
 			}
 
-			if (isExteriorRing(ring, segmentRings, enclosingRings)) {
-				const poly = [renderRing(ring, segmentRings, enclosingRings)];
+			if (isExteriorRing(ring, context)) {
+				const poly = [renderRing(ring, context)];
 
 				polygons.set(ring, poly);
 
@@ -269,14 +288,14 @@ export default function renderMultipolygon(segments) {
 			}
 
 			const enclosing = /** @type {SweepEvent[]} */(
-				enclosingRing(ring, segmentRings, enclosingRings)
+				enclosingRing(ring, context)
 			);
 			const poly = polygons.get(enclosing);
 
 			if (poly == null) {
 				const poly = [
-					renderRing(enclosing, segmentRings, enclosingRings),
-					renderRing(ring, segmentRings, enclosingRings)
+					renderRing(enclosing, context),
+					renderRing(ring, context)
 				];
 
 				polygons.set(enclosing, poly);
@@ -286,7 +305,7 @@ export default function renderMultipolygon(segments) {
 			}
 
 			polygons.set(ring, poly);
-			poly.push(renderRing(ring, segmentRings, enclosingRings));
+			poly.push(renderRing(ring, context));
 		})
 		.map(polygon => {
 			if (polygon?.[0] != null) {

@@ -1,6 +1,6 @@
 // @ts-check
 
-import { runOperation } from './operation.js';
+import runOperation from './operation.js';
 import { precision } from './precision.js';
 
 /**
