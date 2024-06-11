@@ -1,10 +1,24 @@
 // @ts-check
 
-import { describe, expect, test } from '@jest/globals';
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
 import BigNumber from 'bignumber.js';
 import Segment from '../src/segment.js';
 import SweepEvent from '../src/sweep-event.js';
 import { precision } from '../src/precision.js';
+
+/**
+ * @param {import('../src/sweep-event.js').Point | null | undefined} point
+ * @returns {import('../src/vector.js').Vector | undefined}
+ */
+function toVector(point) {
+	if (point != null) {
+		return {
+			x: point.x,
+			y: point.y
+		};
+	}
+}
 
 describe('constructor', () => {
 	test('general', () => {
@@ -25,14 +39,14 @@ describe('constructor', () => {
 		/** @type {number[]} */
 		const windings = [];
 		const seg = new Segment(leftSE, rightSE, rings, windings);
-		expect(seg.rings).toBe(rings);
-		expect(seg.windings).toBe(windings);
-		expect(seg.leftSE).toBe(leftSE);
-		expect(seg.leftSE.otherSE).toBe(rightSE);
-		expect(seg.rightSE).toBe(rightSE);
-		expect(seg.rightSE.otherSE).toBe(leftSE);
-		expect(seg.prev).toBe(undefined);
-		expect(seg.consumedBy).toBe(undefined);
+		assert.strictEqual(seg.rings, rings);
+		assert.strictEqual(seg.windings, windings);
+		assert.strictEqual(seg.leftSE, leftSE);
+		assert.strictEqual(seg.leftSE.otherSE, rightSE);
+		assert.strictEqual(seg.rightSE, rightSE);
+		assert.strictEqual(seg.rightSE.otherSE, leftSE);
+		assert.strictEqual(seg.prev, undefined);
+		assert.strictEqual(seg.consumedBy, undefined);
 	});
 
 	test('segment Id increments', () => {
@@ -50,7 +64,7 @@ describe('constructor', () => {
 		);
 		const seg1 = new Segment(leftSE, rightSE, [], /** @type {any} */(undefined));
 		const seg2 = new Segment(leftSE, rightSE, [], /** @type {any} */(undefined));
-		expect(seg2.id - seg1.id).toBe(1);
+		assert.strictEqual(seg2.id - seg1.id, 1);
 	});
 });
 
@@ -63,8 +77,8 @@ describe('fromRing', () => {
 			{ x: new BigNumber(0), y: new BigNumber(1) }
 		);
 		const seg = Segment.fromRing(p1, p2, /** @type {any} */(undefined));
-		expect(seg.leftSE.point).toEqual(p1);
-		expect(seg.rightSE.point).toEqual(p2);
+		assert.strictEqual(seg.leftSE.point, p1);
+		assert.strictEqual(seg.rightSE.point, p2);
 	});
 
 	test('correct point on left and right 1', () => {
@@ -75,8 +89,8 @@ describe('fromRing', () => {
 			{ x: new BigNumber(-1), y: new BigNumber(0) }
 		);
 		const seg = Segment.fromRing(p1, p2, /** @type {any} */(undefined));
-		expect(seg.leftSE.point).toEqual(p2);
-		expect(seg.rightSE.point).toEqual(p1);
+		assert.strictEqual(seg.leftSE.point, p2);
+		assert.strictEqual(seg.rightSE.point, p1);
 	});
 
 	test('attempt create segment with same points', () => {
@@ -86,7 +100,7 @@ describe('fromRing', () => {
 		const p2 = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(0) }
 		);
-		expect(() => Segment.fromRing(p1, p2, /** @type {any} */(undefined))).toThrow();
+		assert.throws(() => Segment.fromRing(p1, p2, /** @type {any} */(undefined)));
 	});
 });
 
@@ -105,16 +119,16 @@ describe('split', () => {
 			{ x: new BigNumber(5), y: new BigNumber(5) }
 		);
 		const evts = seg.split(pt);
-		expect(evts[0].segment).toBe(seg);
-		expect(evts[0].point).toEqual(pt);
-		expect(evts[0].isLeft).toBe(false);
-		expect(evts[0].otherSE.otherSE).toBe(evts[0]);
-		expect(evts[1].segment.leftSE.segment).toBe(evts[1].segment);
-		expect(evts[1].segment).not.toBe(seg);
-		expect(evts[1].point).toEqual(pt);
-		expect(evts[1].isLeft).toBe(true);
-		expect(evts[1].otherSE.otherSE).toBe(evts[1]);
-		expect(evts[1].segment.rightSE.segment).toBe(evts[1].segment);
+		assert.strictEqual(evts[0].segment, seg);
+		assert.strictEqual(evts[0].point, pt);
+		assert.strictEqual(evts[0].isLeft, false);
+		assert.strictEqual(evts[0].otherSE.otherSE, evts[0]);
+		assert.strictEqual(evts[1].segment.leftSE.segment, evts[1].segment);
+		assert.notStrictEqual(evts[1].segment, seg);
+		assert.strictEqual(evts[1].point, pt);
+		assert.strictEqual(evts[1].isLeft, true);
+		assert.strictEqual(evts[1].otherSE.otherSE, evts[1]);
+		assert.strictEqual(evts[1].segment.rightSE.segment, evts[1].segment);
 	});
 
 	test('on close-to-but-not-exactly interior point', () => {
@@ -131,13 +145,13 @@ describe('split', () => {
 			{ x: new BigNumber(5).plus(new BigNumber(Number.EPSILON)), y: new BigNumber(5) }
 		);
 		const evts = seg.split(pt);
-		expect(evts[0].segment).toBe(seg);
-		expect(evts[0].point).toEqual(pt);
-		expect(evts[0].isLeft).toBe(false);
-		expect(evts[1].segment).not.toBe(seg);
-		expect(evts[1].point).toEqual(pt);
-		expect(evts[1].isLeft).toBe(true);
-		expect(evts[1].segment.rightSE.segment).toBe(evts[1].segment);
+		assert.strictEqual(evts[0].segment, seg);
+		assert.strictEqual(evts[0].point, pt);
+		assert.strictEqual(evts[0].isLeft, false);
+		assert.notStrictEqual(evts[1].segment, seg);
+		assert.strictEqual(evts[1].point, pt);
+		assert.strictEqual(evts[1].isLeft, true);
+		assert.strictEqual(evts[1].segment.rightSE.segment, evts[1].segment);
 	});
 
 	test('on three interior points', () => {
@@ -168,22 +182,22 @@ describe('split', () => {
 		const newEvts1 = seg.split(sPt1);
 		const newEvts = [...newEvts1, ...newEvts2, ...newEvts3];
 
-		expect(newEvts.length).toBe(6);
+		assert.strictEqual(newEvts.length, 6);
 
-		expect(seg.leftSE).toBe(orgLeftEvt);
+		assert.strictEqual(seg.leftSE, orgLeftEvt);
 		let evt = /** @type {SweepEvent} */(newEvts.find(e => e.point === sPt1 && !e.isLeft));
-		expect(seg.rightSE).toBe(newEvts.find(e => e.point === sPt1 && !e.isLeft));
+		assert.strictEqual(seg.rightSE, newEvts.find(e => e.point === sPt1 && !e.isLeft));
 
 		evt = /** @type {SweepEvent} */(newEvts.find(e => e.point === sPt1 && e.isLeft));
 		let otherEvt = /** @type {SweepEvent} */(newEvts.find(e => e.point === sPt2 && !e.isLeft));
-		expect(evt.segment).toBe(otherEvt.segment);
+		assert.strictEqual(evt.segment, otherEvt.segment);
 
 		evt = /** @type {SweepEvent} */(newEvts.find(e => e.point === sPt2 && e.isLeft));
 		otherEvt = /** @type {SweepEvent} */(newEvts.find(e => e.point === sPt3 && !e.isLeft));
-		expect(evt.segment).toBe(otherEvt.segment);
+		assert.strictEqual(evt.segment, otherEvt.segment);
 
 		evt = /** @type {SweepEvent} */(newEvts.find(e => e.point === sPt3 && e.isLeft));
-		expect(evt.segment).toBe(orgRightEvt.segment);
+		assert.strictEqual(evt.segment, orgRightEvt.segment);
 	});
 });
 
@@ -198,7 +212,7 @@ describe('simple properties - bbox, vector', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(seg.bbox()).toEqual({
+		assert.deepStrictEqual(seg.bbox(), {
 			ll: /** @type {import('../src/sweep-event').Point} */(
 				{ x: new BigNumber(1), y: new BigNumber(2) }
 			),
@@ -206,9 +220,12 @@ describe('simple properties - bbox, vector', () => {
 				{ x: new BigNumber(3), y: new BigNumber(4) }
 			)
 		});
-		expect(seg.vector()).toEqual(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(2), y: new BigNumber(2) }
-		));
+		assert.deepStrictEqual(
+			seg.vector(),
+			/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(2), y: new BigNumber(2) }
+			)
+		);
 	});
 
 	test('horizontal', () => {
@@ -221,7 +238,7 @@ describe('simple properties - bbox, vector', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(seg.bbox()).toEqual({
+		assert.deepStrictEqual(seg.bbox(), {
 			ll: /** @type {import('../src/sweep-event').Point} */(
 				{ x: new BigNumber(1), y: new BigNumber(4) }
 			),
@@ -229,8 +246,11 @@ describe('simple properties - bbox, vector', () => {
 				{ x: new BigNumber(3), y: new BigNumber(4) }
 			)
 		});
-		expect(seg.vector()).toEqual(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(2), y: new BigNumber(0) }));
+		assert.deepStrictEqual(
+			seg.vector(), /** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(2), y: new BigNumber(0) }
+			)
+		);
 	});
 
 	test('vertical', () => {
@@ -243,15 +263,19 @@ describe('simple properties - bbox, vector', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(seg.bbox()).toEqual({
+		assert.deepStrictEqual(seg.bbox(), {
 			ll: /** @type {import('../src/sweep-event').Point} */(
 				{ x: new BigNumber(3), y: new BigNumber(2) }
 			),
 			ur: /** @type {import('../src/sweep-event').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(4) })
+				{ x: new BigNumber(3), y: new BigNumber(4) }
+			)
 		});
-		expect(seg.vector()).toEqual(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(2) }));
+		assert.deepStrictEqual(
+			seg.vector(),
+			/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(0), y: new BigNumber(2) })
+		);
 	});
 });
 
@@ -263,8 +287,8 @@ describe('consume()', () => {
 			{ x: new BigNumber(1), y: new BigNumber(0) });
 		const seg1 = Segment.fromRing(p1, p2, /** @type {any} */({ id: 1 }));
 		const seg2 = Segment.fromRing(p1, p2, /** @type {any} */({ id: 2 }));
-		expect(seg1.consumedBy).toBe(undefined);
-		expect(seg2.consumedBy).toBe(undefined);
+		assert.strictEqual(seg1.consumedBy, undefined);
+		assert.strictEqual(seg2.consumedBy, undefined);
 	});
 
 	test('basic case', () => {
@@ -275,8 +299,8 @@ describe('consume()', () => {
 		const seg1 = Segment.fromRing(p1, p2, /** @type {any} */({}));
 		const seg2 = Segment.fromRing(p1, p2, /** @type {any} */({}));
 		seg1.consume(seg2);
-		expect(seg2.consumedBy).toBe(seg1);
-		expect(seg1.consumedBy).toBe(undefined);
+		assert.strictEqual(seg2.consumedBy, seg1);
+		assert.strictEqual(seg1.consumedBy, undefined);
 	});
 
 	test('ealier in sweep line sorting consumes later', () => {
@@ -287,8 +311,8 @@ describe('consume()', () => {
 		const seg1 = Segment.fromRing(p1, p2, /** @type {any} */({}));
 		const seg2 = Segment.fromRing(p1, p2, /** @type {any} */({}));
 		seg2.consume(seg1);
-		expect(seg2.consumedBy).toBe(seg1);
-		expect(seg1.consumedBy).toBe(undefined);
+		assert.strictEqual(seg2.consumedBy, seg1);
+		assert.strictEqual(seg1.consumedBy, undefined);
 	});
 
 	test('consuming cascades', () => {
@@ -309,11 +333,11 @@ describe('consume()', () => {
 		seg4.consume(seg2);
 		seg3.consume(seg2);
 		seg3.consume(seg5);
-		expect(seg1.consumedBy).toBe(undefined);
-		expect(seg2.consumedBy).toBe(seg1);
-		expect(seg3.consumedBy).toBe(seg1);
-		expect(seg4.consumedBy).toBe(seg1);
-		expect(seg5.consumedBy).toBe(seg1);
+		assert.strictEqual(seg1.consumedBy, undefined);
+		assert.strictEqual(seg2.consumedBy, seg1);
+		assert.strictEqual(seg3.consumedBy, seg1);
+		assert.strictEqual(seg4.consumedBy, seg1);
+		assert.strictEqual(seg5.consumedBy, seg1);
 	});
 });
 
@@ -325,15 +349,22 @@ describe('is an endpoint', () => {
 	const seg = Segment.fromRing(p1, p2, /** @type {any} */(undefined));
 
 	test('yup', () => {
-		expect(seg.isAnEndpoint(p1)).toBeTruthy();
-		expect(seg.isAnEndpoint(p2)).toBeTruthy();
+		assert.strictEqual(seg.isAnEndpoint(p1), true);
+		assert.strictEqual(seg.isAnEndpoint(p2), true);
 	});
 
 	test('nope', () => {
-		expect(seg.isAnEndpoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(-34), y: new BigNumber(46) }))).toBeFalsy();
-		expect(seg.isAnEndpoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(0) }))).toBeFalsy();
+		assert.strictEqual(
+			seg.isAnEndpoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(-34), y: new BigNumber(46) })),
+			false
+		);
+		assert.strictEqual(
+			seg.isAnEndpoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(0), y: new BigNumber(0) }
+			)),
+			false
+		);
 	});
 });
 
@@ -358,23 +389,55 @@ describe('comparison with point', () => {
 			/** @type {any} */(undefined)
 		);
 
-		expect(s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(1) }))).toBe(1);
-		expect(s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(1), y: new BigNumber(2) }))).toBe(1);
-		expect(s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(0) }))).toBe(0);
-		expect(s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(5), y: new BigNumber(-1) }))).toBe(-1);
+		assert.strictEqual(
+			s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(0), y: new BigNumber(1) }
+			)),
+			1
+		);
+		assert.strictEqual(
+			s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(1), y: new BigNumber(2) }
+			)),
+			1
+		);
+		assert.strictEqual(
+			s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(0), y: new BigNumber(0) }
+			)),
+			0
+		);
+		assert.strictEqual(
+			s1.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(5), y: new BigNumber(-1) }
+			)),
+			-1
+		);
 
-		expect(s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(1) }))).toBe(0);
-		expect(s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(1), y: new BigNumber(2) }))).toBe(-1);
-		expect(s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(0) }))).toBe(0);
-		expect(s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
-			{ x: new BigNumber(5), y: new BigNumber(-1) }))).toBe(-1);
+		assert.strictEqual(
+			s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(0), y: new BigNumber(1) }
+			)),
+			0
+		);
+		assert.strictEqual(
+			s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(1), y: new BigNumber(2) }
+			)),
+			-1
+		);
+		assert.strictEqual(
+			s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(0), y: new BigNumber(0) }
+			)),
+			0
+		);
+		assert.strictEqual(
+			s2.comparePoint(/** @type {import('../src/sweep-event').Point} */(
+				{ x: new BigNumber(5), y: new BigNumber(-1) }
+			)),
+			-1
+		);
 	});
 
 	test('barely above', () => {
@@ -389,7 +452,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(2), y: new BigNumber(1).minus(new BigNumber(Number.EPSILON)) });
-		expect(s1.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(s1.comparePoint(pt), -1);
 	});
 
 	test('barely below', () => {
@@ -407,7 +470,7 @@ describe('comparison with point', () => {
 			y: new BigNumber(1)
 				.plus(new BigNumber(Number.EPSILON).times(new BigNumber(3)).div(new BigNumber(2)))
 		});
-		expect(s1.comparePoint(pt)).toBe(1);
+		assert.strictEqual(s1.comparePoint(pt), 1);
 	});
 
 	test('vertical before', () => {
@@ -422,7 +485,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(0) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('vertical after', () => {
@@ -437,7 +500,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(2), y: new BigNumber(0) });
-		expect(seg.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(seg.comparePoint(pt), -1);
 	});
 
 	test('vertical on', () => {
@@ -452,7 +515,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(1), y: new BigNumber(0) });
-		expect(seg.comparePoint(pt)).toBe(0);
+		assert.strictEqual(seg.comparePoint(pt), 0);
 	});
 
 	test('horizontal below', () => {
@@ -467,7 +530,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(0) });
-		expect(seg.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(seg.comparePoint(pt), -1);
 	});
 
 	test('horizontal above', () => {
@@ -482,7 +545,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('horizontal on', () => {
@@ -497,7 +560,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(1) });
-		expect(seg.comparePoint(pt)).toBe(0);
+		assert.strictEqual(seg.comparePoint(pt), 0);
 	});
 
 	test('in vertical plane below', () => {
@@ -512,7 +575,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(2), y: new BigNumber(0) });
-		expect(seg.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(seg.comparePoint(pt), -1);
 	});
 
 	test('in vertical plane above', () => {
@@ -527,7 +590,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(2), y: new BigNumber(4) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('in horizontal plane upward sloping before', () => {
@@ -542,7 +605,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('in horizontal plane upward sloping after', () => {
@@ -557,7 +620,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(4), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(seg.comparePoint(pt), -1);
 	});
 
 	test('in horizontal plane downward sloping before', () => {
@@ -572,7 +635,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(seg.comparePoint(pt), -1);
 	});
 
 	test('in horizontal plane downward sloping after', () => {
@@ -587,7 +650,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(4), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('upward more vertical before', () => {
@@ -602,7 +665,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('upward more vertical after', () => {
@@ -617,7 +680,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(4), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(seg.comparePoint(pt), -1);
 	});
 
 	test('downward more vertical before', () => {
@@ -632,7 +695,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(-1);
+		assert.strictEqual(seg.comparePoint(pt), -1);
 	});
 
 	test('downward more vertical after', () => {
@@ -647,7 +710,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(4), y: new BigNumber(2) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('downward-slopping segment with almost touching point - from issue 37', () => {
@@ -662,7 +725,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(0.5239850000000027), y: new BigNumber(51.281651000000004) });
-		expect(seg.comparePoint(pt)).toBe(1);
+		assert.strictEqual(seg.comparePoint(pt), 1);
 	});
 
 	test('avoid splitting loops on near vertical segments - from issue 60-2', () => {
@@ -678,7 +741,7 @@ describe('comparison with point', () => {
 		);
 		const pt = /** @type {import('../src/sweep-event').Point} */(
 			{ x: new BigNumber(-45.326833968900424), y: new BigNumber(-1.40615) });
-		expect(seg.comparePoint(pt)).toBe(0);
+		assert.strictEqual(seg.comparePoint(pt), 0);
 		precision.set();
 	});
 });
@@ -703,8 +766,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.getIntersection(s2)).toBeNull();
-		expect(s2.getIntersection(s1)).toBeNull();
+		assert.strictEqual(s1.getIntersection(s2), null);
+		assert.strictEqual(s2.getIntersection(s1), null);
 	});
 
 	test('colinear partial overlap upward slope', () => {
@@ -728,8 +791,9 @@ describe('get intersections 2', () => {
 		);
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		/** @type {any} */
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('colinear partial overlap downward slope', () => {
@@ -753,8 +817,8 @@ describe('get intersections 2', () => {
 		);
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(0), y: new BigNumber(2) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('colinear partial overlap horizontal', () => {
@@ -778,8 +842,8 @@ describe('get intersections 2', () => {
 		);
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('colinear partial overlap vertical', () => {
@@ -803,8 +867,8 @@ describe('get intersections 2', () => {
 		);
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(0), y: new BigNumber(2) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('colinear endpoint overlap', () => {
@@ -826,8 +890,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.getIntersection(s2)).toBeNull();
-		expect(s2.getIntersection(s1)).toBeNull();
+		assert.strictEqual(s1.getIntersection(s2), null);
+		assert.strictEqual(s2.getIntersection(s1), null);
 	});
 
 	test('colinear no overlap', () => {
@@ -849,8 +913,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.getIntersection(s2)).toBeNull();
-		expect(s2.getIntersection(s1)).toBeNull();
+		assert.strictEqual(s1.getIntersection(s2), null);
+		assert.strictEqual(s2.getIntersection(s1), null);
 	});
 
 	test('parallel no overlap', () => {
@@ -872,8 +936,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.getIntersection(s2)).toBeNull();
-		expect(s2.getIntersection(s1)).toBeNull();
+		assert.strictEqual(s1.getIntersection(s2), null);
+		assert.strictEqual(s2.getIntersection(s1), null);
 	});
 
 	test('intersect general', () => {
@@ -898,8 +962,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('T-intersect with an endpoint', () => {
@@ -924,8 +988,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('intersect with vertical', () => {
@@ -950,8 +1014,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(3), y: new BigNumber(3) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(s1.getIntersection(s2), inter);
+		assert.deepStrictEqual(s2.getIntersection(s1), inter);
 	});
 
 	test('intersect with horizontal', () => {
@@ -976,8 +1040,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(3), y: new BigNumber(3) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('horizontal and vertical T-intersection', () => {
@@ -1002,8 +1066,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(3), y: new BigNumber(0) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
+		assert.deepStrictEqual(toVector(s2.getIntersection(s1)), inter);
 	});
 
 	test('horizontal and vertical general intersection', () => {
@@ -1028,8 +1092,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(3), y: new BigNumber(0) };
-		expect(s1.getIntersection(s2)).toMatchObject(inter);
-		expect(s2.getIntersection(s1)).toMatchObject(inter);
+		assert.deepStrictEqual(s1.getIntersection(s2), inter);
+		assert.deepStrictEqual(s2.getIntersection(s1), inter);
 	});
 
 	test('no intersection not even close', () => {
@@ -1051,8 +1115,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.getIntersection(s2)).toBeNull();
-		expect(s2.getIntersection(s1)).toBeNull();
+		assert.strictEqual(s1.getIntersection(s2), null);
+		assert.strictEqual(s2.getIntersection(s1), null);
 	});
 
 	test('no intersection kinda close', () => {
@@ -1074,8 +1138,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.getIntersection(s2)).toBeNull();
-		expect(s2.getIntersection(s1)).toBeNull();
+		assert.strictEqual(s1.getIntersection(s2), null);
+		assert.strictEqual(s2.getIntersection(s1), null);
 	});
 
 	test('no intersection with vertical touching bbox', () => {
@@ -1097,8 +1161,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.getIntersection(s2)).toBeNull();
-		expect(s2.getIntersection(s1)).toBeNull();
+		assert.strictEqual(s1.getIntersection(s2), null);
+		assert.strictEqual(s2.getIntersection(s1), null);
 	});
 
 	test('shared point 1 (endpoint)', () => {
@@ -1120,8 +1184,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('shared point 2 (endpoint)', () => {
@@ -1143,8 +1207,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('T-crossing left endpoint', () => {
@@ -1169,8 +1233,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(0.5), y: new BigNumber(0.5) };
-		expect(a.getIntersection(b)).toMatchObject(inter);
-		expect(b.getIntersection(a)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(a.getIntersection(b)), inter);
+		assert.deepStrictEqual(toVector(b.getIntersection(a)), inter);
 	});
 
 	test('T-crossing right endpoint', () => {
@@ -1195,8 +1259,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(0.5), y: new BigNumber(0.5) };
-		expect(a.getIntersection(b)).toMatchObject(inter);
-		expect(b.getIntersection(a)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(a.getIntersection(b)), inter);
+		assert.deepStrictEqual(toVector(b.getIntersection(a)), inter);
 	});
 
 	test('full overlap', () => {
@@ -1221,8 +1285,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
-		expect(a.getIntersection(b)).toMatchObject(inter);
-		expect(b.getIntersection(a)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(a.getIntersection(b)), inter);
+		assert.deepStrictEqual(toVector(b.getIntersection(a)), inter);
 	});
 
 	test('shared point + overlap', () => {
@@ -1247,8 +1311,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(5), y: new BigNumber(5) };
-		expect(a.getIntersection(b)).toMatchObject(inter);
-		expect(b.getIntersection(a)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(a.getIntersection(b)), inter);
+		assert.deepStrictEqual(toVector(b.getIntersection(a)), inter);
 	});
 
 	test('mutual overlap', () => {
@@ -1273,8 +1337,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(3), y: new BigNumber(3) };
-		expect(a.getIntersection(b)).toMatchObject(inter);
-		expect(b.getIntersection(a)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(a.getIntersection(b)), inter);
+		assert.deepStrictEqual(toVector(b.getIntersection(a)), inter);
 	});
 
 	test('full overlap', () => {
@@ -1296,8 +1360,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('full overlap, orientation', () => {
@@ -1319,8 +1383,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('colinear, shared point', () => {
@@ -1342,8 +1406,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('colinear, shared other point', () => {
@@ -1365,8 +1429,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('colinear, one encloses other', () => {
@@ -1391,8 +1455,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
-		expect(a.getIntersection(b)).toMatchObject(inter);
-		expect(b.getIntersection(a)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(a.getIntersection(b)), inter);
+		assert.deepStrictEqual(toVector(b.getIntersection(a)), inter);
 	});
 
 	test('colinear, one encloses other 2', () => {
@@ -1417,8 +1481,8 @@ describe('get intersections 2', () => {
 
 		/** @type {Record<"x" | "y", BigNumber>} */
 		const inter = { x: new BigNumber(1), y: new BigNumber(3) };
-		expect(a.getIntersection(b)).toMatchObject(inter);
-		expect(b.getIntersection(a)).toMatchObject(inter);
+		assert.deepStrictEqual(toVector(a.getIntersection(b)), inter);
+		assert.deepStrictEqual(toVector(b.getIntersection(a)), inter);
 	});
 
 	test('colinear, no overlap', () => {
@@ -1440,8 +1504,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('parallel', () => {
@@ -1463,8 +1527,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('parallel, orientation', () => {
@@ -1486,8 +1550,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('parallel, position', () => {
@@ -1509,8 +1573,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(a.getIntersection(b)).toBeNull();
-		expect(b.getIntersection(a)).toBeNull();
+		assert.strictEqual(a.getIntersection(b), null);
+		assert.strictEqual(b.getIntersection(a), null);
 	});
 
 	test('endpoint intersections should be consistent - issue 60', () => {
@@ -1544,10 +1608,10 @@ describe('get intersections 2', () => {
 			/** @type {any} */(undefined)
 		);
 
-		expect(segA1.getIntersection(segB)).toMatchObject({ x, y });
-		expect(segA2.getIntersection(segB)).toMatchObject({ x, y });
-		expect(segB.getIntersection(segA1)).toMatchObject({ x, y });
-		expect(segB.getIntersection(segA2)).toMatchObject({ x, y });
+		assert.deepStrictEqual(toVector(segA1.getIntersection(segB)), { x, y });
+		assert.deepStrictEqual(toVector(segA2.getIntersection(segB)), { x, y });
+		assert.deepStrictEqual(toVector(segB.getIntersection(segA1)), { x, y });
+		assert.deepStrictEqual(toVector(segB.getIntersection(segA2)), { x, y });
 		precision.set();
 	});
 
@@ -1571,8 +1635,8 @@ describe('get intersections 2', () => {
 			/** @type {any} */(undefined)
 		);
 
-		expect(segA.getIntersection(segB)).toBeNull();
-		expect(segB.getIntersection(segA)).toBeNull();
+		assert.strictEqual(segA.getIntersection(segB), null);
+		assert.strictEqual(segB.getIntersection(segA), null);
 	});
 
 	test('endpoint intersection between very short and very vertical segment', () => {
@@ -1594,8 +1658,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(segA.getIntersection(segB)).toBeNull();
-		expect(segB.getIntersection(segA)).toBeNull();
+		assert.strictEqual(segA.getIntersection(segB), null);
+		assert.strictEqual(segB.getIntersection(segA), null);
 	});
 
 	test('avoid intersection - issue 79', () => {
@@ -1617,8 +1681,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(segA.getIntersection(segB)).toBeNull();
-		expect(segB.getIntersection(segA)).toBeNull();
+		assert.strictEqual(segA.getIntersection(segB), null);
+		assert.strictEqual(segB.getIntersection(segA), null);
 	});
 });
 
@@ -1643,8 +1707,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('in same vertical space, earlier is below', () => {
@@ -1666,8 +1730,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('in same vertical space, later is below', () => {
@@ -1689,8 +1753,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('with left points in same vertical line', () => {
@@ -1712,8 +1776,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('with earlier right point directly under later left point', () => {
@@ -1735,8 +1799,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('with eariler right point directly over earlier left point', () => {
@@ -1758,8 +1822,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 	});
 
@@ -1783,8 +1847,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('earlier comes up from directly over & below', () => {
@@ -1806,8 +1870,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('earlier comes up from after & below', () => {
@@ -1829,8 +1893,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('later comes down from before & above', () => {
@@ -1852,8 +1916,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('later comes up from directly over & above', () => {
@@ -1875,8 +1939,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('later comes up from after & above', () => {
@@ -1898,8 +1962,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('with a vertical', () => {
@@ -1921,8 +1985,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 	});
 
@@ -1946,8 +2010,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('intersect on left from above', () => {
@@ -1969,8 +2033,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('intersect on left from below', () => {
@@ -1992,8 +2056,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('intersect on left from vertical', () => {
@@ -2015,8 +2079,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 	});
 
@@ -2040,8 +2104,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('earlier comes up from directly over & below', () => {
@@ -2063,8 +2127,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('earlier comes up from after & below', () => {
@@ -2086,8 +2150,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('later comes down from before & above', () => {
@@ -2109,8 +2173,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('laterjcomes up from directly over & above', () => {
@@ -2132,8 +2196,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 
 		test('later comes up from after & above', () => {
@@ -2155,8 +2219,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(-1);
-			expect(Segment.compare(seg2, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg2), -1);
+			assert.strictEqual(Segment.compare(seg2, seg1), 1);
 		});
 	});
 
@@ -2180,8 +2244,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('one vertical, other not', () => {
@@ -2203,8 +2267,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('one segment thinks theyre colinear, but the other says no', () => {
@@ -2227,8 +2291,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 			precision.set();
 		});
 	});
@@ -2253,8 +2317,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('complete overlap', () => {
@@ -2276,8 +2340,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('right endpoints match', () => {
@@ -2299,8 +2363,8 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */(undefined)
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 		});
 
 		test('left endpoints match - should be length', () => {
@@ -2331,14 +2395,14 @@ describe('compare segments', () => {
 				),
 				/** @type {any} */({ id: 3 })
 			);
-			expect(Segment.compare(seg1, seg2)).toBe(1);
-			expect(Segment.compare(seg2, seg1)).toBe(-1);
+			assert.strictEqual(Segment.compare(seg1, seg2), 1);
+			assert.strictEqual(Segment.compare(seg2, seg1), -1);
 
-			expect(Segment.compare(seg2, seg3)).toBe(-1);
-			expect(Segment.compare(seg3, seg2)).toBe(1);
+			assert.strictEqual(Segment.compare(seg2, seg3), -1);
+			assert.strictEqual(Segment.compare(seg3, seg2), 1);
 
-			expect(Segment.compare(seg1, seg3)).toBe(-1);
-			expect(Segment.compare(seg3, seg1)).toBe(1);
+			assert.strictEqual(Segment.compare(seg1, seg3), -1);
+			assert.strictEqual(Segment.compare(seg3, seg1), 1);
 		});
 	});
 
@@ -2361,8 +2425,8 @@ describe('compare segments', () => {
 			),
 			/** @type {any} */({ id: 2 })
 		);
-		expect(Segment.compare(seg1, seg2)).toBe(-1);
-		expect(Segment.compare(seg2, seg1)).toBe(1);
+		assert.strictEqual(Segment.compare(seg1, seg2), -1);
+		assert.strictEqual(Segment.compare(seg2, seg1), 1);
 	});
 
 	test('exactly equal segments (but not identical) are consistent', () => {
@@ -2385,8 +2449,8 @@ describe('compare segments', () => {
 			/** @type {any} */({ id: 1 })
 		);
 		const result = Segment.compare(seg1, seg2);
-		expect(Segment.compare(seg1, seg2)).toBe(result);
-		expect(Segment.compare(seg2, seg1)).toBe(result * -1);
+		assert.strictEqual(Segment.compare(seg1, seg2), result);
+		assert.strictEqual(Segment.compare(seg2, seg1), result * -1);
 	});
 
 	test('segment consistency - from #60', () => {
@@ -2408,8 +2472,8 @@ describe('compare segments', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(Segment.compare(seg1, seg2)).toBe(-1);
-		expect(Segment.compare(seg2, seg1)).toBe(1);
+		assert.strictEqual(Segment.compare(seg1, seg2), -1);
+		assert.strictEqual(Segment.compare(seg2, seg1), 1);
 	});
 
 	test('ensure transitive - part of issue 60', () => {
@@ -2441,13 +2505,13 @@ describe('compare segments', () => {
 			/** @type {any} */(undefined)
 		);
 
-		expect(Segment.compare(seg2, seg6)).toBe(-1);
-		expect(Segment.compare(seg6, seg4)).toBe(-1);
-		expect(Segment.compare(seg2, seg4)).toBe(-1);
+		assert.strictEqual(Segment.compare(seg2, seg6), -1);
+		assert.strictEqual(Segment.compare(seg6, seg4), -1);
+		assert.strictEqual(Segment.compare(seg2, seg4), -1);
 
-		expect(Segment.compare(seg6, seg2)).toBe(1);
-		expect(Segment.compare(seg4, seg6)).toBe(1);
-		expect(Segment.compare(seg4, seg2)).toBe(1);
+		assert.strictEqual(Segment.compare(seg6, seg2), 1);
+		assert.strictEqual(Segment.compare(seg4, seg6), 1);
+		assert.strictEqual(Segment.compare(seg4, seg2), 1);
 	});
 
 	test('ensure transitive 2 - also part of issue 60', () => {
@@ -2479,12 +2543,12 @@ describe('compare segments', () => {
 			/** @type {any} */(undefined)
 		);
 
-		expect(Segment.compare(seg1, seg2)).toBe(-1);
-		expect(Segment.compare(seg2, seg3)).toBe(-1);
-		expect(Segment.compare(seg1, seg3)).toBe(-1);
+		assert.strictEqual(Segment.compare(seg1, seg2), -1);
+		assert.strictEqual(Segment.compare(seg2, seg3), -1);
+		assert.strictEqual(Segment.compare(seg1, seg3), -1);
 
-		expect(Segment.compare(seg2, seg1)).toBe(1);
-		expect(Segment.compare(seg3, seg2)).toBe(1);
-		expect(Segment.compare(seg3, seg1)).toBe(1);
+		assert.strictEqual(Segment.compare(seg2, seg1), 1);
+		assert.strictEqual(Segment.compare(seg3, seg2), 1);
+		assert.strictEqual(Segment.compare(seg3, seg1), 1);
 	});
 });

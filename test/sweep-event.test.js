@@ -1,7 +1,8 @@
 /* eslint-disable no-new */
 // @ts-check
 
-import { describe, expect, test } from '@jest/globals';
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
 import { BigNumber } from 'bignumber.js';
 import Segment from '../src/segment.js';
 import SweepEvent from '../src/sweep-event.js';
@@ -20,8 +21,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(s1, s2)).toBe(-1);
-		expect(SweepEvent.compare(s2, s1)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(s1, s2), -1);
+		assert.strictEqual(SweepEvent.compare(s2, s1), 1);
 	});
 
 	test('then favor earlier y in point', () => {
@@ -36,8 +37,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(s1, s2)).toBe(-1);
-		expect(SweepEvent.compare(s2, s1)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(s1, s2), -1);
+		assert.strictEqual(SweepEvent.compare(s2, s1), 1);
 	});
 
 	test('then favor right events over left', () => {
@@ -59,8 +60,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(seg1.rightSE, seg2.leftSE)).toBe(-1);
-		expect(SweepEvent.compare(seg2.leftSE, seg1.rightSE)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(seg1.rightSE, seg2.leftSE), -1);
+		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.rightSE), 1);
 	});
 
 	test('then favor non-vertical segments for left events', () => {
@@ -82,8 +83,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(seg1.leftSE, seg2.rightSE)).toBe(-1);
-		expect(SweepEvent.compare(seg2.rightSE, seg1.leftSE)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
+		assert.strictEqual(SweepEvent.compare(seg2.rightSE, seg1.leftSE), 1);
 	});
 
 	test('then favor vertical segments for right events', () => {
@@ -105,8 +106,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(seg1.leftSE, seg2.rightSE)).toBe(-1);
-		expect(SweepEvent.compare(seg2.rightSE, seg1.leftSE)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
+		assert.strictEqual(SweepEvent.compare(seg2.rightSE, seg1.leftSE), 1);
 	});
 
 	test('then favor lower segment', () => {
@@ -128,8 +129,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(seg1.leftSE, seg2.rightSE)).toBe(-1);
-		expect(SweepEvent.compare(seg2.rightSE, seg1.leftSE)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
+		assert.strictEqual(SweepEvent.compare(seg2.rightSE, seg1.leftSE), 1);
 	});
 
 	// Sometimes from one segment's perspective it appears colinear
@@ -155,8 +156,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(seg1.leftSE, seg2.leftSE)).toBe(1);
-		expect(SweepEvent.compare(seg2.leftSE, seg1.leftSE)).toBe(-1);
+		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), 1);
+		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.leftSE), -1);
 	});
 
 	test('then favor lower ring id', () => {
@@ -178,8 +179,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */({ id: 2 })
 		);
-		expect(SweepEvent.compare(seg1.leftSE, seg2.leftSE)).toBe(-1);
-		expect(SweepEvent.compare(seg2.leftSE, seg1.leftSE)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), -1);
+		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.leftSE), 1);
 	});
 
 	test('identical equal', () => {
@@ -197,7 +198,7 @@ describe('sweep event compare', () => {
 		);
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
-		expect(SweepEvent.compare(s1, s1)).toBe(0);
+		assert.strictEqual(SweepEvent.compare(s1, s1), 0);
 	});
 
 	test('totally equal but not identical events are consistent', () => {
@@ -222,8 +223,8 @@ describe('sweep event compare', () => {
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
 		new Segment(s2, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
 		const result = SweepEvent.compare(s1, s2);
-		expect(SweepEvent.compare(s1, s2)).toBe(result);
-		expect(SweepEvent.compare(s2, s1)).toBe(result * -1);
+		assert.strictEqual(SweepEvent.compare(s1, s2), result);
+		assert.strictEqual(SweepEvent.compare(s2, s1), result * -1);
 	});
 
 	test('events are linked as side effect', () => {
@@ -260,9 +261,9 @@ describe('sweep event compare', () => {
 			/** @type {any} */(undefined),
 			/** @type {any} */(undefined)
 		);
-		expect(s1.point !== s2.point);
+		assert.notStrictEqual(s1.point, s2.point);
 		SweepEvent.compare(s1, s2);
-		expect(s1.point === s2.point);
+		assert.strictEqual(s1.point, s2.point);
 	});
 
 	test('consistency edge case', () => {
@@ -285,8 +286,8 @@ describe('sweep event compare', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		expect(SweepEvent.compare(seg1.leftSE, seg2.leftSE)).toBe(-1);
-		expect(SweepEvent.compare(seg2.leftSE, seg1.leftSE)).toBe(1);
+		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), -1);
+		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.leftSE), 1);
 	});
 });
 
@@ -297,8 +298,8 @@ describe('constructor', () => {
 		);
 		const s1 = new SweepEvent(p1, /** @type {any} */(undefined));
 		const s2 = new SweepEvent(p1, /** @type {any} */(undefined));
-		expect(s1.point === p1);
-		expect(s1.point.events === s2.point.events);
+		assert.strictEqual(s1.point, p1);
+		assert.strictEqual(s1.point.events, s2.point.events);
 	});
 });
 
@@ -358,10 +359,10 @@ describe('sweep event link', () => {
 			/** @type {any} */(undefined)
 		);
 		se1.link(se3);
-		expect(se1.point.events.length).toBe(4);
-		expect(se1.point).toBe(se2.point);
-		expect(se1.point).toBe(se3.point);
-		expect(se1.point).toBe(se4.point);
+		assert.strictEqual(se1.point.events.length, 4);
+		assert.strictEqual(se1.point, se2.point);
+		assert.strictEqual(se1.point, se3.point);
+		assert.strictEqual(se1.point, se4.point);
 	});
 
 	test('same event twice', () => {
@@ -370,8 +371,8 @@ describe('sweep event link', () => {
 		);
 		const s1 = new SweepEvent(p1, /** @type {any} */(undefined));
 		const s2 = new SweepEvent(p1, /** @type {any} */(undefined));
-		expect(() => s2.link(s1)).toThrow();
-		expect(() => s1.link(s2)).toThrow();
+		assert.throws(() => s2.link(s1));
+		assert.throws(() => s1.link(s2));
 	});
 });
 
@@ -481,21 +482,21 @@ describe('sweep event get leftmost comparator', () => {
 			/** @type {any} */(undefined)
 		);
 
-		expect(comparator(e1, e2)).toBe(-1);
-		expect(comparator(e2, e3)).toBe(-1);
-		expect(comparator(e3, e4)).toBe(-1);
-		expect(comparator(e4, e5)).toBe(-1);
+		assert.strictEqual(comparator(e1, e2), -1);
+		assert.strictEqual(comparator(e2, e3), -1);
+		assert.strictEqual(comparator(e3, e4), -1);
+		assert.strictEqual(comparator(e4, e5), -1);
 
-		expect(comparator(e2, e1)).toBe(1);
-		expect(comparator(e3, e2)).toBe(1);
-		expect(comparator(e4, e3)).toBe(1);
-		expect(comparator(e5, e4)).toBe(1);
+		assert.strictEqual(comparator(e2, e1), 1);
+		assert.strictEqual(comparator(e3, e2), 1);
+		assert.strictEqual(comparator(e4, e3), 1);
+		assert.strictEqual(comparator(e5, e4), 1);
 
-		expect(comparator(e1, e3)).toBe(-1);
-		expect(comparator(e1, e4)).toBe(-1);
-		expect(comparator(e1, e5)).toBe(-1);
+		assert.strictEqual(comparator(e1, e3), -1);
+		assert.strictEqual(comparator(e1, e4), -1);
+		assert.strictEqual(comparator(e1, e5), -1);
 
-		expect(comparator(e1, e1)).toBe(0);
+		assert.strictEqual(comparator(e1, e1), 0);
 	});
 
 	test('after a down and to the left', () => {
@@ -585,20 +586,20 @@ describe('sweep event get leftmost comparator', () => {
 			/** @type {any} */(undefined)
 		);
 
-		expect(comparator(e1, e2)).toBe(1);
-		expect(comparator(e1, e3)).toBe(1);
-		expect(comparator(e1, e4)).toBe(1);
+		assert.strictEqual(comparator(e1, e2), 1);
+		assert.strictEqual(comparator(e1, e3), 1);
+		assert.strictEqual(comparator(e1, e4), 1);
 
-		expect(comparator(e2, e1)).toBe(-1);
-		expect(comparator(e2, e3)).toBe(-1);
-		expect(comparator(e2, e4)).toBe(-1);
+		assert.strictEqual(comparator(e2, e1), -1);
+		assert.strictEqual(comparator(e2, e3), -1);
+		assert.strictEqual(comparator(e2, e4), -1);
 
-		expect(comparator(e3, e1)).toBe(-1);
-		expect(comparator(e3, e2)).toBe(1);
-		expect(comparator(e3, e4)).toBe(-1);
+		assert.strictEqual(comparator(e3, e1), -1);
+		assert.strictEqual(comparator(e3, e2), 1);
+		assert.strictEqual(comparator(e3, e4), -1);
 
-		expect(comparator(e4, e1)).toBe(-1);
-		expect(comparator(e4, e2)).toBe(1);
-		expect(comparator(e4, e3)).toBe(1);
+		assert.strictEqual(comparator(e4, e1), -1);
+		assert.strictEqual(comparator(e4, e2), 1);
+		assert.strictEqual(comparator(e4, e3), 1);
 	});
 });

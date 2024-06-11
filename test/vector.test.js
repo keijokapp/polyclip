@@ -1,6 +1,7 @@
 // @ts-check
 
-import { describe, expect, test } from '@jest/globals';
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
 import { BigNumber } from 'bignumber.js';
 import {
 	crossProduct,
@@ -18,7 +19,7 @@ describe('cross product', () => {
 	test('general', () => {
 		const pt1 = { x: new BigNumber(1), y: new BigNumber(2) };
 		const pt2 = { x: new BigNumber(3), y: new BigNumber(4) };
-		expect(crossProduct(pt1, pt2)).toEqual(new BigNumber(-2));
+		assert.deepStrictEqual(crossProduct(pt1, pt2), new BigNumber(-2));
 	});
 });
 
@@ -26,24 +27,24 @@ describe('dot product', () => {
 	test('general', () => {
 		const pt1 = { x: new BigNumber(1), y: new BigNumber(2) };
 		const pt2 = { x: new BigNumber(3), y: new BigNumber(4) };
-		expect(dotProduct(pt1, pt2)).toEqual(new BigNumber(11));
+		assert.deepStrictEqual(dotProduct(pt1, pt2), new BigNumber(11));
 	});
 });
 
 describe('length()', () => {
 	test('horizontal', () => {
 		const v = { x: new BigNumber(3), y: new BigNumber(0) };
-		expect(length(v)).toStrictEqual(new BigNumber(3));
+		assert.deepStrictEqual(length(v), new BigNumber(3));
 	});
 
 	test('vertical', () => {
 		const v = { x: new BigNumber(0), y: new BigNumber(-2) };
-		expect(length(v)).toStrictEqual(new BigNumber(2));
+		assert.deepStrictEqual(length(v), new BigNumber(2));
 	});
 
 	test('3-4-5', () => {
 		const v = { x: new BigNumber(3), y: new BigNumber(4) };
-		expect(length(v)).toStrictEqual(new BigNumber(5));
+		assert.deepStrictEqual(length(v), new BigNumber(5));
 	});
 });
 
@@ -53,10 +54,10 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(1), y: new BigNumber(0) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(0));
+			assert.deepStrictEqual(sineOfAngle(shared, base, angle), new BigNumber(0));
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(1));
+			assert.deepStrictEqual(cosineOfAngle(shared, base, angle), new BigNumber(1));
 		});
 	});
 
@@ -65,12 +66,14 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(1), y: new BigNumber(-1) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				sineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
 			);
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				cosineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
 			);
 		});
@@ -81,10 +84,10 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(0), y: new BigNumber(-1) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(1));
+			assert.deepStrictEqual(sineOfAngle(shared, base, angle), new BigNumber(1));
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(0));
+			assert.deepStrictEqual(cosineOfAngle(shared, base, angle), new BigNumber(0));
 		});
 	});
 
@@ -93,12 +96,14 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(-1), y: new BigNumber(-1) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				sineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
 			);
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				cosineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
 					.toNumber()
 			);
@@ -110,10 +115,10 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(-1), y: new BigNumber(0) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(-0));
+			assert.deepStrictEqual(sineOfAngle(shared, base, angle), new BigNumber(-0));
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(-1));
+			assert.deepStrictEqual(cosineOfAngle(shared, base, angle), new BigNumber(-1));
 		});
 	});
 
@@ -122,13 +127,15 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(-1), y: new BigNumber(1) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				sineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
 					.toNumber()
 			);
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				cosineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
 					.toNumber()
 			);
@@ -140,10 +147,10 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(0), y: new BigNumber(1) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(-1));
+			assert.deepStrictEqual(sineOfAngle(shared, base, angle), new BigNumber(-1));
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle)).toStrictEqual(new BigNumber(0));
+			assert.deepStrictEqual(cosineOfAngle(shared, base, angle), new BigNumber(0));
 		});
 	});
 
@@ -152,13 +159,15 @@ describe('sine and cosine of angle', () => {
 		const base = { x: new BigNumber(1), y: new BigNumber(0) };
 		const angle = { x: new BigNumber(1), y: new BigNumber(1) };
 		test('sine', () => {
-			expect(sineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				sineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
 					.toNumber()
 			);
 		});
 		test('cosine', () => {
-			expect(cosineOfAngle(shared, base, angle).toNumber()).toBeCloseTo(
+			assert.strictEqual(
+				cosineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
 			);
 		});
@@ -169,29 +178,29 @@ describe('perpendicular()', () => {
 	test('vertical', () => {
 		const v = { x: new BigNumber(0), y: new BigNumber(1) };
 		const r = perpendicular(v);
-		expect(dotProduct(v, r)).toStrictEqual(new BigNumber(0));
-		expect(crossProduct(v, r)).not.toBe(new BigNumber(0));
+		assert.deepStrictEqual(dotProduct(v, r), new BigNumber(0));
+		assert.notStrictEqual(crossProduct(v, r), new BigNumber(0));
 	});
 
 	test('horizontal', () => {
 		const v = { x: new BigNumber(1), y: new BigNumber(0) };
 		const r = perpendicular(v);
-		expect(dotProduct(v, r)).toStrictEqual(new BigNumber(0));
-		expect(crossProduct(v, r)).not.toBe(new BigNumber(0));
+		assert.deepStrictEqual(dotProduct(v, r), new BigNumber(0));
+		assert.notStrictEqual(crossProduct(v, r), new BigNumber(0));
 	});
 
 	test('45 degrees', () => {
 		const v = { x: new BigNumber(1), y: new BigNumber(1) };
 		const r = perpendicular(v);
-		expect(dotProduct(v, r)).toStrictEqual(new BigNumber(0));
-		expect(crossProduct(v, r)).not.toBe(new BigNumber(0));
+		assert.deepStrictEqual(dotProduct(v, r), new BigNumber(0));
+		assert.notStrictEqual(crossProduct(v, r), new BigNumber(0));
 	});
 
 	test('120 degrees', () => {
 		const v = { x: new BigNumber(-1), y: new BigNumber(2) };
 		const r = perpendicular(v);
-		expect(dotProduct(v, r)).toStrictEqual(new BigNumber(0));
-		expect(crossProduct(v, r)).not.toBe(new BigNumber(0));
+		assert.deepStrictEqual(dotProduct(v, r), new BigNumber(0));
+		assert.notStrictEqual(crossProduct(v, r), new BigNumber(0));
 	});
 });
 
@@ -201,15 +210,15 @@ describe('verticalIntersection()', () => {
 		const v = { x: new BigNumber(-2), y: new BigNumber(0) };
 		const x = new BigNumber(37);
 		const i = /** @type {import('../src/vector').Vector} */(verticalIntersection(p, v, x));
-		expect(i.x).toStrictEqual(new BigNumber(37));
-		expect(i.y).toStrictEqual(new BigNumber(3));
+		assert.deepStrictEqual(i.x, new BigNumber(37));
+		assert.deepStrictEqual(i.y, new BigNumber(3));
 	});
 
 	test('vertical', () => {
 		const p = { x: new BigNumber(42), y: new BigNumber(3) };
 		const v = { x: new BigNumber(0), y: new BigNumber(4) };
 		const x = new BigNumber(37);
-		expect(verticalIntersection(p, v, x)).toBe(null);
+		assert.strictEqual(verticalIntersection(p, v, x), null);
 	});
 
 	test('45 degree', () => {
@@ -217,8 +226,8 @@ describe('verticalIntersection()', () => {
 		const v = { x: new BigNumber(1), y: new BigNumber(1) };
 		const x = new BigNumber(-2);
 		const i = /** @type {import('../src/vector').Vector} */(verticalIntersection(p, v, x));
-		expect(i.x).toStrictEqual(new BigNumber(-2));
-		expect(i.y).toStrictEqual(new BigNumber(-2));
+		assert.deepStrictEqual(i.x, new BigNumber(-2));
+		assert.deepStrictEqual(i.y, new BigNumber(-2));
 	});
 
 	test('upper left quadrant', () => {
@@ -226,8 +235,8 @@ describe('verticalIntersection()', () => {
 		const v = { x: new BigNumber(-2), y: new BigNumber(1) };
 		const x = new BigNumber(-3);
 		const i = /** @type {import('../src/vector').Vector} */(verticalIntersection(p, v, x));
-		expect(i.x).toStrictEqual(new BigNumber(-3));
-		expect(i.y).toStrictEqual(new BigNumber(2));
+		assert.deepStrictEqual(i.x, new BigNumber(-3));
+		assert.deepStrictEqual(i.y, new BigNumber(2));
 	});
 });
 
@@ -236,7 +245,7 @@ describe('horizontalIntersection()', () => {
 		const p = { x: new BigNumber(42), y: new BigNumber(3) };
 		const v = { x: new BigNumber(-2), y: new BigNumber(0) };
 		const y = new BigNumber(37);
-		expect(horizontalIntersection(p, v, y)).toBe(null);
+		assert.strictEqual(horizontalIntersection(p, v, y), null);
 	});
 
 	test('vertical', () => {
@@ -244,8 +253,8 @@ describe('horizontalIntersection()', () => {
 		const v = { x: new BigNumber(0), y: new BigNumber(4) };
 		const y = new BigNumber(37);
 		const i = /** @type {import('../src/vector').Vector} */(horizontalIntersection(p, v, y));
-		expect(i.x).toStrictEqual(new BigNumber(42));
-		expect(i.y).toStrictEqual(new BigNumber(37));
+		assert.deepStrictEqual(i.x, new BigNumber(42));
+		assert.deepStrictEqual(i.y, new BigNumber(37));
 	});
 
 	test('45 degree', () => {
@@ -253,8 +262,8 @@ describe('horizontalIntersection()', () => {
 		const v = { x: new BigNumber(1), y: new BigNumber(1) };
 		const y = new BigNumber(4);
 		const i = /** @type {import('../src/vector').Vector} */(horizontalIntersection(p, v, y));
-		expect(i.x).toStrictEqual(new BigNumber(4));
-		expect(i.y).toStrictEqual(new BigNumber(4));
+		assert.deepStrictEqual(i.x, new BigNumber(4));
+		assert.deepStrictEqual(i.y, new BigNumber(4));
 	});
 
 	test('bottom left quadrant', () => {
@@ -262,8 +271,8 @@ describe('horizontalIntersection()', () => {
 		const v = { x: new BigNumber(-2), y: new BigNumber(-1) };
 		const y = new BigNumber(-3);
 		const i = /** @type {import('../src/vector').Vector} */(horizontalIntersection(p, v, y));
-		expect(i.x).toStrictEqual(new BigNumber(-5));
-		expect(i.y).toStrictEqual(new BigNumber(-3));
+		assert.deepStrictEqual(i.x, new BigNumber(-5));
+		assert.deepStrictEqual(i.y, new BigNumber(-3));
 	});
 });
 
@@ -275,39 +284,39 @@ describe('intersection()', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(2) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(-2) };
 		const i = intersection(p1, v1, p2, v2);
-		expect(i).toBe(null);
+		assert.strictEqual(i, null);
 	});
 
 	test('horizontal and vertical', () => {
 		const v1 = { x: new BigNumber(0), y: new BigNumber(2) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(0) };
 		const i = /** @type {import('../src/vector').Vector} */(intersection(p1, v1, p2, v2));
-		expect(i.x).toStrictEqual(new BigNumber(42));
-		expect(i.y).toStrictEqual(new BigNumber(46));
+		assert.deepStrictEqual(i.x, new BigNumber(42));
+		assert.deepStrictEqual(i.y, new BigNumber(46));
 	});
 
 	test('horizontal', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(0) };
 		const i = /** @type {import('../src/vector').Vector} */(intersection(p1, v1, p2, v2));
-		expect(i.x).toStrictEqual(new BigNumber(46));
-		expect(i.y).toStrictEqual(new BigNumber(46));
+		assert.deepStrictEqual(i.x, new BigNumber(46));
+		assert.deepStrictEqual(i.y, new BigNumber(46));
 	});
 
 	test('vertical', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v2 = { x: new BigNumber(0), y: new BigNumber(1) };
 		const i = /** @type {import('../src/vector').Vector} */(intersection(p1, v1, p2, v2));
-		expect(i.x).toStrictEqual(new BigNumber(-32));
-		expect(i.y).toStrictEqual(new BigNumber(-32));
+		assert.deepStrictEqual(i.x, new BigNumber(-32));
+		assert.deepStrictEqual(i.y, new BigNumber(-32));
 	});
 
 	test('45 degree & 135 degree', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(1) };
 		const i = /** @type {import('../src/vector').Vector} */(intersection(p1, v1, p2, v2));
-		expect(i.x).toStrictEqual(new BigNumber(7));
-		expect(i.y).toStrictEqual(new BigNumber(7));
+		assert.deepStrictEqual(i.x, new BigNumber(7));
+		assert.deepStrictEqual(i.y, new BigNumber(7));
 	});
 
 	test('consistency', () => {
@@ -320,7 +329,7 @@ describe('intersection()', () => {
 		};
 		const i1 = /** @type {import('../src/vector').Vector} */(intersection(p1, v1, p2, v2));
 		const i2 = /** @type {import('../src/vector').Vector} */(intersection(p2, v2, p1, v1));
-		expect(i1.x).toStrictEqual(i2.x);
-		expect(i1.y).toStrictEqual(i2.y);
+		assert.deepStrictEqual(i1.x, i2.x);
+		assert.deepStrictEqual(i1.y, i2.y);
 	});
 });

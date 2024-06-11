@@ -1,6 +1,7 @@
 // @ts-check
 
-import { describe, expect, test } from '@jest/globals';
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
 import BigNumber from 'bignumber.js';
 import { precision } from '../src/precision.js';
 
@@ -10,10 +11,10 @@ describe('compare vector angles', () => {
 		const pt2 = { x: new BigNumber(2), y: new BigNumber(2) };
 		const pt3 = { x: new BigNumber(3), y: new BigNumber(3) };
 
-		expect(precision.orient(pt1, pt2, pt3)).toBe(0);
-		expect(precision.orient(pt2, pt1, pt3)).toBe(0);
-		expect(precision.orient(pt2, pt3, pt1)).toBe(0);
-		expect(precision.orient(pt3, pt2, pt1)).toBe(0);
+		assert.strictEqual(precision.orient(pt1, pt2, pt3), 0);
+		assert.strictEqual(precision.orient(pt2, pt1, pt3), 0);
+		assert.strictEqual(precision.orient(pt2, pt3, pt1), 0);
+		assert.strictEqual(precision.orient(pt3, pt2, pt1), 0);
 	});
 
 	test('offset', () => {
@@ -21,9 +22,9 @@ describe('compare vector angles', () => {
 		const pt2 = { x: new BigNumber(1), y: new BigNumber(1) };
 		const pt3 = { x: new BigNumber(1), y: new BigNumber(0) };
 
-		expect(precision.orient(pt1, pt2, pt3)).toBe(1);
-		expect(precision.orient(pt2, pt1, pt3)).toBe(-1);
-		expect(precision.orient(pt2, pt3, pt1)).toBe(1);
-		expect(precision.orient(pt3, pt2, pt1)).toBe(-1);
+		assert.strictEqual(precision.orient(pt1, pt2, pt3), 1);
+		assert.strictEqual(precision.orient(pt2, pt1, pt3), -1);
+		assert.strictEqual(precision.orient(pt2, pt3, pt1), 1);
+		assert.strictEqual(precision.orient(pt3, pt2, pt1), -1);
 	});
 });

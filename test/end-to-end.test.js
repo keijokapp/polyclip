@@ -1,9 +1,13 @@
 // @ts-check
 
-import { describe, expect, test } from '@jest/globals';
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as url from 'url';
 import * as polyclip from '../src/index.js';
+
+const directoryName = path.dirname(url.fileURLToPath(import.meta.url));
 
 /** USE ME TO RUN ONLY ONE TEST * */
 const targetOnly = '';
@@ -15,7 +19,7 @@ const targetsSkip = [];
 /** @type {string[]} */
 const opsSkip = [];
 
-const endToEndDir = 'test/end-to-end';
+const endToEndDir = path.join(directoryName, 'end-to-end');
 
 describe('end to end', () => {
 	const targets = fs.readdirSync(endToEndDir);
@@ -71,7 +75,7 @@ describe('end to end', () => {
 
 					// @ts-ignore
 					const result = operation(...args);
-					expect(result).toEqual(expected);
+					assert.deepStrictEqual(result, expected);
 				});
 			});
 		});

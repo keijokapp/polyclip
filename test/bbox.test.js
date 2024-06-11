@@ -1,6 +1,7 @@
 // @ts-check
 
-import { describe, expect, test } from '@jest/globals';
+import assert from 'node:assert';
+import { describe, test } from 'node:test';
 import BigNumber from 'bignumber.js';
 import { getBboxOverlap, isInBbox } from '../src/bbox.js';
 
@@ -10,10 +11,10 @@ describe('is in bbox', () => {
 			ll: { x: new BigNumber(1), y: new BigNumber(2) },
 			ur: { x: new BigNumber(5), y: new BigNumber(6) }
 		};
-		expect(isInBbox(bbox, { x: new BigNumber(0), y: new BigNumber(3) })).toBeFalsy();
-		expect(isInBbox(bbox, { x: new BigNumber(3), y: new BigNumber(30) })).toBeFalsy();
-		expect(isInBbox(bbox, { x: new BigNumber(3), y: new BigNumber(-30) })).toBeFalsy();
-		expect(isInBbox(bbox, { x: new BigNumber(9), y: new BigNumber(3) })).toBeFalsy();
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(0), y: new BigNumber(3) }), false);
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(3), y: new BigNumber(30) }), false);
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(3), y: new BigNumber(-30) }), false);
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(9), y: new BigNumber(3) }), false);
 	});
 
 	test('inside', () => {
@@ -21,11 +22,11 @@ describe('is in bbox', () => {
 			ll: { x: new BigNumber(1), y: new BigNumber(2) },
 			ur: { x: new BigNumber(5), y: new BigNumber(6) }
 		};
-		expect(isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(2) })).toBeTruthy();
-		expect(isInBbox(bbox, { x: new BigNumber(5), y: new BigNumber(6) })).toBeTruthy();
-		expect(isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(6) })).toBeTruthy();
-		expect(isInBbox(bbox, { x: new BigNumber(5), y: new BigNumber(2) })).toBeTruthy();
-		expect(isInBbox(bbox, { x: new BigNumber(3), y: new BigNumber(4) })).toBeTruthy();
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(2) }), true);
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(5), y: new BigNumber(6) }), true);
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(6) }), true);
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(5), y: new BigNumber(2) }), true);
+		assert.strictEqual(isInBbox(bbox, { x: new BigNumber(3), y: new BigNumber(4) }), true);
 	});
 
 	test('barely inside & outside', () => {
@@ -33,14 +34,22 @@ describe('is in bbox', () => {
 			ll: { x: new BigNumber(1), y: new BigNumber(0.8) },
 			ur: { x: new BigNumber(1.2), y: new BigNumber(6) }
 		};
-		expect(isInBbox(bbox, { x: new BigNumber(1.2).minus(Number.EPSILON), y: new BigNumber(6) }))
-			.toBeTruthy();
-		expect(isInBbox(bbox, { x: new BigNumber(1.2).plus(Number.EPSILON), y: new BigNumber(6) }))
-			.toBeFalsy();
-		expect(isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(0.8).plus(Number.EPSILON) }))
-			.toBeTruthy();
-		expect(isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(0.8).minus(Number.EPSILON) }))
-			.toBeFalsy();
+		assert.strictEqual(
+			isInBbox(bbox, { x: new BigNumber(1.2).minus(Number.EPSILON), y: new BigNumber(6) }),
+			true
+		);
+		assert.strictEqual(
+			isInBbox(bbox, { x: new BigNumber(1.2).plus(Number.EPSILON), y: new BigNumber(6) }),
+			false
+		);
+		assert.strictEqual(
+			isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(0.8).plus(Number.EPSILON) }),
+			true
+		);
+		assert.strictEqual(
+			isInBbox(bbox, { x: new BigNumber(1), y: new BigNumber(0.8).minus(Number.EPSILON) }),
+			false
+		);
 	});
 });
 
@@ -55,28 +64,28 @@ describe('bbox overlap', () => {
 				ll: { x: new BigNumber(7), y: new BigNumber(7) },
 				ur: { x: new BigNumber(8), y: new BigNumber(8) }
 			};
-			expect(getBboxOverlap(b1, b2)).toBeUndefined();
+			assert.strictEqual(getBboxOverlap(b1, b2), undefined);
 		});
 		test('left', () => {
 			const b2 = {
 				ll: { x: new BigNumber(1), y: new BigNumber(5) },
 				ur: { x: new BigNumber(3), y: new BigNumber(8) }
 			};
-			expect(getBboxOverlap(b1, b2)).toBeUndefined();
+			assert.strictEqual(getBboxOverlap(b1, b2), undefined);
 		});
 		test('down', () => {
 			const b2 = {
 				ll: { x: new BigNumber(2), y: new BigNumber(2) },
 				ur: { x: new BigNumber(3), y: new BigNumber(3) }
 			};
-			expect(getBboxOverlap(b1, b2)).toBeUndefined();
+			assert.strictEqual(getBboxOverlap(b1, b2), undefined);
 		});
 		test('right', () => {
 			const b2 = {
 				ll: { x: new BigNumber(12), y: new BigNumber(1) },
 				ur: { x: new BigNumber(14), y: new BigNumber(9) }
 			};
-			expect(getBboxOverlap(b1, b2)).toBeUndefined();
+			assert.strictEqual(getBboxOverlap(b1, b2), undefined);
 		});
 	});
 
@@ -86,7 +95,7 @@ describe('bbox overlap', () => {
 				ll: { x: new BigNumber(6), y: new BigNumber(6) },
 				ur: { x: new BigNumber(7), y: new BigNumber(8) }
 			};
-			expect(getBboxOverlap(b1, b2)).toEqual({
+			assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 				ll: { x: new BigNumber(6), y: new BigNumber(6) },
 				ur: { x: new BigNumber(6), y: new BigNumber(6) }
 			});
@@ -96,7 +105,7 @@ describe('bbox overlap', () => {
 				ll: { x: new BigNumber(3), y: new BigNumber(6) },
 				ur: { x: new BigNumber(4), y: new BigNumber(8) }
 			};
-			expect(getBboxOverlap(b1, b2)).toEqual({
+			assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 				ll: { x: new BigNumber(4), y: new BigNumber(6) },
 				ur: { x: new BigNumber(4), y: new BigNumber(6) }
 			});
@@ -106,7 +115,7 @@ describe('bbox overlap', () => {
 				ll: { x: new BigNumber(0), y: new BigNumber(0) },
 				ur: { x: new BigNumber(4), y: new BigNumber(4) }
 			};
-			expect(getBboxOverlap(b1, b2)).toEqual({
+			assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 				ll: { x: new BigNumber(4), y: new BigNumber(4) },
 				ur: { x: new BigNumber(4), y: new BigNumber(4) }
 			});
@@ -116,7 +125,7 @@ describe('bbox overlap', () => {
 				ll: { x: new BigNumber(6), y: new BigNumber(0) },
 				ur: { x: new BigNumber(12), y: new BigNumber(4) }
 			};
-			expect(getBboxOverlap(b1, b2)).toEqual({
+			assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 				ll: { x: new BigNumber(6), y: new BigNumber(4) },
 				ur: { x: new BigNumber(6), y: new BigNumber(4) }
 			});
@@ -126,7 +135,7 @@ describe('bbox overlap', () => {
 	describe('overlapping - two points', () => {
 		describe('full overlap', () => {
 			test('matching bboxes', () => {
-				expect(getBboxOverlap(b1, b1)).toEqual(b1);
+				assert.deepStrictEqual(getBboxOverlap(b1, b1), b1);
 			});
 
 			test('one side & two corners matching', () => {
@@ -134,7 +143,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(4) },
 					ur: { x: new BigNumber(5), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(4) },
 					ur: { x: new BigNumber(5), y: new BigNumber(6) }
 				});
@@ -145,7 +154,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(5), y: new BigNumber(4) },
 					ur: { x: new BigNumber(6), y: new BigNumber(5) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(5), y: new BigNumber(4) },
 					ur: { x: new BigNumber(6), y: new BigNumber(5) }
 				});
@@ -156,7 +165,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4.5), y: new BigNumber(4.5) },
 					ur: { x: new BigNumber(5.5), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(4.5), y: new BigNumber(4.5) },
 					ur: { x: new BigNumber(5.5), y: new BigNumber(6) }
 				});
@@ -167,7 +176,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4.5), y: new BigNumber(5) },
 					ur: { x: new BigNumber(5.5), y: new BigNumber(5.5) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual(b2);
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), b2);
 			});
 		});
 
@@ -177,7 +186,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(3), y: new BigNumber(4) },
 					ur: { x: new BigNumber(5), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(4) },
 					ur: { x: new BigNumber(5), y: new BigNumber(6) }
 				});
@@ -188,7 +197,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(5), y: new BigNumber(4.5) },
 					ur: { x: new BigNumber(7), y: new BigNumber(5.5) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(5), y: new BigNumber(4.5) },
 					ur: { x: new BigNumber(6), y: new BigNumber(5.5) }
 				});
@@ -199,7 +208,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(5), y: new BigNumber(5) },
 					ur: { x: new BigNumber(7), y: new BigNumber(7) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(5), y: new BigNumber(5) },
 					ur: { x: new BigNumber(6), y: new BigNumber(6) }
 				});
@@ -214,7 +223,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(7), y: new BigNumber(3) },
 					ur: { x: new BigNumber(7), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(b1, b2)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(b1, b2), undefined);
 			});
 
 			test('point overlap', () => {
@@ -222,7 +231,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(6), y: new BigNumber(0) },
 					ur: { x: new BigNumber(6), y: new BigNumber(4) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(6), y: new BigNumber(4) },
 					ur: { x: new BigNumber(6), y: new BigNumber(4) }
 				});
@@ -233,7 +242,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(5), y: new BigNumber(0) },
 					ur: { x: new BigNumber(5), y: new BigNumber(9) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(5), y: new BigNumber(4) },
 					ur: { x: new BigNumber(5), y: new BigNumber(6) }
 				});
@@ -246,7 +255,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(3), y: new BigNumber(7) },
 					ur: { x: new BigNumber(6), y: new BigNumber(7) }
 				};
-				expect(getBboxOverlap(b1, b2)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(b1, b2), undefined);
 			});
 
 			test('point overlap', () => {
@@ -254,7 +263,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(1), y: new BigNumber(6) },
 					ur: { x: new BigNumber(4), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(4), y: new BigNumber(6) }
 				});
@@ -265,7 +274,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(6), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(6), y: new BigNumber(6) }
 				});
@@ -282,7 +291,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(7) },
 					ur: { x: new BigNumber(4), y: new BigNumber(8) }
 				};
-				expect(getBboxOverlap(v1, v2)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(v1, v2), undefined);
 			});
 
 			test('point overlap', () => {
@@ -290,7 +299,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(3) },
 					ur: { x: new BigNumber(4), y: new BigNumber(4) }
 				};
-				expect(getBboxOverlap(v1, v2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(v1, v2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(4) },
 					ur: { x: new BigNumber(4), y: new BigNumber(4) }
 				});
@@ -301,7 +310,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(3) },
 					ur: { x: new BigNumber(4), y: new BigNumber(5) }
 				};
-				expect(getBboxOverlap(v1, v2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(v1, v2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(4) },
 					ur: { x: new BigNumber(4), y: new BigNumber(5) }
 				});
@@ -318,7 +327,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(5) },
 					ur: { x: new BigNumber(7), y: new BigNumber(5) }
 				};
-				expect(getBboxOverlap(h1, h2)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(h1, h2), undefined);
 			});
 
 			test('point overlap', () => {
@@ -326,7 +335,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(7), y: new BigNumber(6) },
 					ur: { x: new BigNumber(8), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(h1, h2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(h1, h2), {
 					ll: { x: new BigNumber(7), y: new BigNumber(6) },
 					ur: { x: new BigNumber(7), y: new BigNumber(6) }
 				});
@@ -337,7 +346,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(7), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(h1, h2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(h1, h2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(7), y: new BigNumber(6) }
 				});
@@ -354,7 +363,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(5), y: new BigNumber(7) },
 					ur: { x: new BigNumber(5), y: new BigNumber(9) }
 				};
-				expect(getBboxOverlap(h1, v1)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(h1, v1), undefined);
 			});
 
 			test('point overlap', () => {
@@ -366,7 +375,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(5), y: new BigNumber(5) },
 					ur: { x: new BigNumber(5), y: new BigNumber(9) }
 				};
-				expect(getBboxOverlap(h1, v1)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(h1, v1), {
 					ll: { x: new BigNumber(5), y: new BigNumber(6) },
 					ur: { x: new BigNumber(5), y: new BigNumber(6) }
 				});
@@ -379,7 +388,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(8), y: new BigNumber(8) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(6), y: new BigNumber(6) }
 				});
@@ -390,7 +399,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(6), y: new BigNumber(2) },
 					ur: { x: new BigNumber(8), y: new BigNumber(8) }
 				};
-				expect(getBboxOverlap(b1, b2)).toEqual({
+				assert.deepStrictEqual(getBboxOverlap(b1, b2), {
 					ll: { x: new BigNumber(6), y: new BigNumber(4) },
 					ur: { x: new BigNumber(6), y: new BigNumber(6) }
 				});
@@ -405,14 +414,14 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(2), y: new BigNumber(2) },
 					ur: { x: new BigNumber(2), y: new BigNumber(2) }
 				};
-				expect(getBboxOverlap(b1, p)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(b1, p), undefined);
 			});
 			test('point overlap', () => {
 				const p = {
 					ll: { x: new BigNumber(5), y: new BigNumber(5) },
 					ur: { x: new BigNumber(5), y: new BigNumber(5) }
 				};
-				expect(getBboxOverlap(b1, p)).toEqual(p);
+				assert.deepStrictEqual(getBboxOverlap(b1, p), p);
 			});
 		});
 
@@ -426,7 +435,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(4), y: new BigNumber(8) }
 				};
-				expect(getBboxOverlap(l, p)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(l, p), undefined);
 			});
 			test('point overlap', () => {
 				const p = {
@@ -437,7 +446,7 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(5) },
 					ur: { x: new BigNumber(6), y: new BigNumber(5) }
 				};
-				expect(getBboxOverlap(l, p)).toEqual(p);
+				assert.deepStrictEqual(getBboxOverlap(l, p), p);
 			});
 		});
 
@@ -451,14 +460,14 @@ describe('bbox overlap', () => {
 					ll: { x: new BigNumber(4), y: new BigNumber(6) },
 					ur: { x: new BigNumber(4), y: new BigNumber(6) }
 				};
-				expect(getBboxOverlap(p1, p2)).toBeUndefined();
+				assert.strictEqual(getBboxOverlap(p1, p2), undefined);
 			});
 			test('point overlap', () => {
 				const p = {
 					ll: { x: new BigNumber(5), y: new BigNumber(5) },
 					ur: { x: new BigNumber(5), y: new BigNumber(5) }
 				};
-				expect(getBboxOverlap(p, p)).toEqual(p);
+				assert.deepStrictEqual(getBboxOverlap(p, p), p);
 			});
 		});
 	});
