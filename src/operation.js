@@ -1,7 +1,8 @@
 // @ts-check
 
+import BigNumber from 'bignumber.js';
 import { getBboxOverlap } from './bbox.js';
-import * as geomIn from './geom-in.js';
+import { createInputPolygon, normalizePolygon } from './geom-in.js';
 import renderMultipolygon from './geom-out.js';
 import { precision } from './precision.js';
 import sweepLine from './sweep-line.js';
@@ -12,16 +13,11 @@ import sweepLine from './sweep-line.js';
 
 /**
  * @param {OperationType} type
- * @param {import('polyclip').Geom} geom
- * @param {import('polyclip').Geom[]} moreGeoms
+ * @param {import('polyclip').Geom[]} geoms
  * @returns {import('polyclip').MultiPolygon}
  */
-export default function runOperation(type, geom, moreGeoms) {
-	/* Convert inputs to MultiPoly objects */
-	const multipolys = [new geomIn.MultiPolyIn(geom, true)];
-	for (let i = 0, iMax = moreGeoms.length; i < iMax; i++) {
-		multipolys.push(new geomIn.MultiPolyIn(moreGeoms[i], false));
-	}
+export default function runOperation(type, geoms) {
+	const multipolygons = geoms.map(geom => normalizePolygon(geom));
 
 	/* BBox optimization for difference operation
 	 * If the bbox of a multipolygon that's part of the clipping doesn't
@@ -29,11 +25,11 @@ export default function runOperation(type, geom, moreGeoms) {
 	 * multiploygon. */
 	if (type === 'difference') {
 		// in place removal
-		const subject = multipolys[0];
+		const subjectBbox = getBoundingBox(multipolygons[0]);
 		let i = 1;
-		while (i < multipolys.length) {
-			if (getBboxOverlap(multipolys[i].bbox, subject.bbox) != null) i++;
-			else multipolys.splice(i, 1);
+		while (i < multipolygons.length) {
+			if (getBboxOverlap(getBoundingBox(multipolygons[i]), subjectBbox) != null) i++;
+			else multipolygons.splice(i, 1);
 		}
 	}
 
@@ -41,15 +37,23 @@ export default function runOperation(type, geom, moreGeoms) {
 	 * If we can find any pair of multipolygons whose bbox does not overlap,
 	 * then the result will be empty. */
 	if (type === 'intersection') {
+		const boundingBoxes = multipolygons.map(multipolygon => getBoundingBox(multipolygon));
 		// TODO: this is O(n^2) in number of polygons. By sorting the bboxes,
 		//       it could be optimized to O(n * ln(n))
-		for (let i = 0, iMax = multipolys.length; i < iMax; i++) {
-			const mpA = multipolys[i];
-			for (let j = i + 1, jMax = multipolys.length; j < jMax; j++) {
-				if (getBboxOverlap(mpA.bbox, multipolys[j].bbox) == null) return [];
+		for (let i = 0; i < boundingBoxes.length; i++) {
+			const boundingBox = boundingBoxes[i];
+			for (let j = i + 1; j < boundingBoxes.length; j++) {
+				if (getBboxOverlap(boundingBox, boundingBoxes[j]) == null) {
+					return [];
+				}
 			}
 		}
 	}
+
+	/* Convert inputs to MultiPoly objects */
+	const multipolys = multipolygons.map(
+		(multipolygon, i) => createInputPolygon(multipolygon, i === 0)
+	);
 
 	/* Pass the sweep line over those endpoints */
 	const segments = sweepLine(multipolys);
@@ -58,4 +62,24 @@ export default function runOperation(type, geom, moreGeoms) {
 	precision.reset();
 
 	return renderMultipolygon(segments, type, multipolys.length);
+}
+
+/**
+ * @param {import('polyclip').MultiPolygon<import('./vector.js').Vector>} mulitpolygon
+ * @returns {import('./bbox.js').Bbox}
+ */
+function getBoundingBox(mulitpolygon) {
+	const xcoords = mulitpolygon.flat(2).map(({ x }) => x);
+	const ycoords = mulitpolygon.flat(2).map(({ y }) => y);
+
+	return {
+		ll: {
+			x: BigNumber.min(...xcoords),
+			y: BigNumber.min(...ycoords)
+		},
+		ur: {
+			x: BigNumber.max(...xcoords),
+			y: BigNumber.max(...ycoords)
+		}
+	};
 }

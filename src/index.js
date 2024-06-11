@@ -4,39 +4,35 @@ import runOperation from './operation.js';
 import { precision } from './precision.js';
 
 /**
- * @param {import('polyclip').Geom} geom
- * @param {import('polyclip').Geom[]} moreGeoms
- * @returns {import('polyclip').Geom}
+ * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @returns {import('polyclip').MultiPolygon}
  */
-export function union(geom, ...moreGeoms) {
-	return runOperation('union', geom, moreGeoms);
+export function union(...geoms) {
+	return runOperation('union', geoms);
 }
 
 /**
- * @param {import('polyclip').Geom} geom
- * @param {import('polyclip').Geom[]} moreGeoms
- * @returns {import('polyclip').Geom}
+ * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @returns {import('polyclip').MultiPolygon}
  */
-export function intersection(geom, ...moreGeoms) {
-	return runOperation('intersection', geom, moreGeoms);
+export function intersection(...geoms) {
+	return runOperation('intersection', geoms);
 }
 
 /**
- * @param {import('polyclip').Geom} geom
- * @param {import('polyclip').Geom[]} moreGeoms
- * @returns {import('polyclip').Geom}
+ * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @returns {import('polyclip').MultiPolygon}
  */
-export function xor(geom, ...moreGeoms) {
-	return runOperation('xor', geom, moreGeoms);
+export function xor(...geoms) {
+	return runOperation('xor', geoms);
 }
 
 /**
- * @param {import('polyclip').Geom} geom
- * @param {import('polyclip').Geom[]} moreGeoms
- * @returns {import('polyclip').Geom}
+ * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @returns {import('polyclip').MultiPolygon}
  */
-export function difference(geom, ...moreGeoms) {
-	return runOperation('difference', geom, moreGeoms);
+export function difference(...geoms) {
+	return runOperation('difference', geoms);
 }
 
 export const setPrecision = precision.set;

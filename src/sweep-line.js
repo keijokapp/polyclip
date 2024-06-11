@@ -198,7 +198,11 @@ export default function sweepLine(multipolys) {
 
 	const { queue } = context;
 
-	queue.addAll(multipolys.flatMap(poly => poly.getSweepEvents()));
+	queue.addAll(multipolys.flatMap(multipoly => multipoly.polys.flatMap(
+		poly => poly.rings
+			.flatMap(ring => ring.segments)
+			.flatMap(segment => [segment.leftSE, segment.rightSE])
+	)));
 
 	while (queue.size !== 0) {
 		const evt = queue.first();

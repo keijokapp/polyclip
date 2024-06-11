@@ -1,9 +1,9 @@
 declare module "polyclip" {
 	export type Pair = [number, number]
-	export type Ring = Pair[]
-	export type Polygon = Ring[]
-	export type MultiPolygon = Polygon[]
-	type Geom = Polygon | MultiPolygon
+	export type Ring<C = Pair> = C[]
+	export type Polygon<C = Pair> = Ring<C>[]
+	export type MultiPolygon<C = Pair> = Polygon<C>[]
+	export type Geom<C = Pair> = Polygon<C> | MultiPolygon<C>
 	export function intersection(geom: Geom, ...geoms: Geom[]): MultiPolygon
 	export function xor(geom: Geom, ...geoms: Geom[]): MultiPolygon
 	export function union(geom: Geom, ...geoms: Geom[]): MultiPolygon
