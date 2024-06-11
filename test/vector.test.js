@@ -218,7 +218,7 @@ describe('verticalIntersection()', () => {
 		const p = { x: new BigNumber(42), y: new BigNumber(3) };
 		const v = { x: new BigNumber(0), y: new BigNumber(4) };
 		const x = new BigNumber(37);
-		assert.strictEqual(verticalIntersection(p, v, x), null);
+		assert.strictEqual(verticalIntersection(p, v, x), undefined);
 	});
 
 	test('45 degree', () => {
@@ -245,7 +245,7 @@ describe('horizontalIntersection()', () => {
 		const p = { x: new BigNumber(42), y: new BigNumber(3) };
 		const v = { x: new BigNumber(-2), y: new BigNumber(0) };
 		const y = new BigNumber(37);
-		assert.strictEqual(horizontalIntersection(p, v, y), null);
+		assert.strictEqual(horizontalIntersection(p, v, y), undefined);
 	});
 
 	test('vertical', () => {
@@ -284,7 +284,7 @@ describe('intersection()', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(2) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(-2) };
 		const i = intersection(p1, v1, p2, v2);
-		assert.strictEqual(i, null);
+		assert.strictEqual(i, undefined);
 	});
 
 	test('horizontal and vertical', () => {

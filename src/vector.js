@@ -66,51 +66,47 @@ export function cosineOfAngle(pShared, pBase, pAngle) {
 /**
  * Get the x coordinate where the given line (defined by a point and vector)
  * crosses the horizontal line with the given y coordiante.
- * In the case of parrallel lines (including overlapping ones) returns null.
+ * In the case of parrallel lines (including overlapping ones) returns undefined.
  * @param {Vector} pt
  * @param {Vector} v
  * @param {import('bignumber.js').BigNumber} y
- * @returns {Vector | null}
+ * @returns {Vector | undefined}
  */
 export function horizontalIntersection(pt, v, y) {
-	if (v.y.isZero()) {
-		return null;
+	if (!v.y.isZero()) {
+		return {
+			x: pt.x.plus((v.x.div(v.y)).times(y.minus(pt.y))),
+			y
+		};
 	}
-
-	return {
-		x: pt.x.plus((v.x.div(v.y)).times(y.minus(pt.y))),
-		y
-	};
 }
 
 /**
  * Get the y coordinate where the given line (defined by a point and vector)
  * crosses the vertical line with the given x coordiante.
- * In the case of parrallel lines (including overlapping ones) returns null.
+ * In the case of parrallel lines (including overlapping ones) returns undefined.
  * @param {Vector} pt
  * @param {Vector} v
  * @param {import('bignumber.js').BigNumber} x
- * @returns {Vector | null}
+ * @returns {Vector | undefined}
  */
 export function verticalIntersection(pt, v, x) {
-	if (v.x.isZero()) {
-		return null;
+	if (!v.x.isZero()) {
+		return {
+			x,
+			y: pt.y.plus((v.y.div(v.x)).times(x.minus(pt.x)))
+		};
 	}
-
-	return {
-		x,
-		y: pt.y.plus((v.y.div(v.x)).times(x.minus(pt.x)))
-	};
 }
 
 /**
  * Get the intersection of two lines, each defined by a base point and a vector.
- * In the case of parrallel lines (including overlapping ones) returns null.
+ * In the case of parrallel lines (including overlapping ones) returns undefined.
  * @param {Vector} pt1
  * @param {Vector} v1
  * @param {Vector} pt2
  * @param {Vector} v2
- * @returns {Vector | null}
+ * @returns {Vector | undefined}
  */
 export function intersection(pt1, v1, pt2, v2) {
 	// take some shortcuts for vertical and horizontal lines
@@ -138,7 +134,7 @@ export function intersection(pt1, v1, pt2, v2) {
 
 	const kross = crossProduct(v1, v2);
 	if (kross.isZero()) {
-		return null;
+		return;
 	}
 
 	const ve = { x: pt2.x.minus(pt1.x), y: pt2.y.minus(pt1.y) };

@@ -8,7 +8,7 @@ import SweepEvent from '../src/sweep-event.js';
 import { precision } from '../src/precision.js';
 
 /**
- * @param {import('../src/sweep-event.js').Point | null | undefined} point
+ * @param {import('../src/sweep-event.js').Point | undefined} point
  * @returns {import('../src/vector.js').Vector | undefined}
  */
 function toVector(point) {
@@ -766,8 +766,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(s1.getIntersection(s2), null);
-		assert.strictEqual(s2.getIntersection(s1), null);
+		assert.strictEqual(s1.getIntersection(s2), undefined);
+		assert.strictEqual(s2.getIntersection(s1), undefined);
 	});
 
 	test('colinear partial overlap upward slope', () => {
@@ -890,8 +890,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(s1.getIntersection(s2), null);
-		assert.strictEqual(s2.getIntersection(s1), null);
+		assert.strictEqual(s1.getIntersection(s2), undefined);
+		assert.strictEqual(s2.getIntersection(s1), undefined);
 	});
 
 	test('colinear no overlap', () => {
@@ -913,8 +913,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(s1.getIntersection(s2), null);
-		assert.strictEqual(s2.getIntersection(s1), null);
+		assert.strictEqual(s1.getIntersection(s2), undefined);
+		assert.strictEqual(s2.getIntersection(s1), undefined);
 	});
 
 	test('parallel no overlap', () => {
@@ -936,8 +936,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(s1.getIntersection(s2), null);
-		assert.strictEqual(s2.getIntersection(s1), null);
+		assert.strictEqual(s1.getIntersection(s2), undefined);
+		assert.strictEqual(s2.getIntersection(s1), undefined);
 	});
 
 	test('intersect general', () => {
@@ -1115,8 +1115,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(s1.getIntersection(s2), null);
-		assert.strictEqual(s2.getIntersection(s1), null);
+		assert.strictEqual(s1.getIntersection(s2), undefined);
+		assert.strictEqual(s2.getIntersection(s1), undefined);
 	});
 
 	test('no intersection kinda close', () => {
@@ -1138,8 +1138,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(s1.getIntersection(s2), null);
-		assert.strictEqual(s2.getIntersection(s1), null);
+		assert.strictEqual(s1.getIntersection(s2), undefined);
+		assert.strictEqual(s2.getIntersection(s1), undefined);
 	});
 
 	test('no intersection with vertical touching bbox', () => {
@@ -1161,8 +1161,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(s1.getIntersection(s2), null);
-		assert.strictEqual(s2.getIntersection(s1), null);
+		assert.strictEqual(s1.getIntersection(s2), undefined);
+		assert.strictEqual(s2.getIntersection(s1), undefined);
 	});
 
 	test('shared point 1 (endpoint)', () => {
@@ -1184,8 +1184,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('shared point 2 (endpoint)', () => {
@@ -1207,8 +1207,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('T-crossing left endpoint', () => {
@@ -1360,8 +1360,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('full overlap, orientation', () => {
@@ -1383,8 +1383,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('colinear, shared point', () => {
@@ -1406,8 +1406,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('colinear, shared other point', () => {
@@ -1429,8 +1429,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('colinear, one encloses other', () => {
@@ -1504,8 +1504,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('parallel', () => {
@@ -1527,8 +1527,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('parallel, orientation', () => {
@@ -1550,8 +1550,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('parallel, position', () => {
@@ -1573,8 +1573,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(a.getIntersection(b), null);
-		assert.strictEqual(b.getIntersection(a), null);
+		assert.strictEqual(a.getIntersection(b), undefined);
+		assert.strictEqual(b.getIntersection(a), undefined);
 	});
 
 	test('endpoint intersections should be consistent - issue 60', () => {
@@ -1635,8 +1635,8 @@ describe('get intersections 2', () => {
 			/** @type {any} */(undefined)
 		);
 
-		assert.strictEqual(segA.getIntersection(segB), null);
-		assert.strictEqual(segB.getIntersection(segA), null);
+		assert.strictEqual(segA.getIntersection(segB), undefined);
+		assert.strictEqual(segB.getIntersection(segA), undefined);
 	});
 
 	test('endpoint intersection between very short and very vertical segment', () => {
@@ -1658,8 +1658,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(segA.getIntersection(segB), null);
-		assert.strictEqual(segB.getIntersection(segA), null);
+		assert.strictEqual(segA.getIntersection(segB), undefined);
+		assert.strictEqual(segB.getIntersection(segA), undefined);
 	});
 
 	test('avoid intersection - issue 79', () => {
@@ -1681,8 +1681,8 @@ describe('get intersections 2', () => {
 			),
 			/** @type {any} */(undefined)
 		);
-		assert.strictEqual(segA.getIntersection(segB), null);
-		assert.strictEqual(segB.getIntersection(segA), null);
+		assert.strictEqual(segA.getIntersection(segB), undefined);
+		assert.strictEqual(segB.getIntersection(segA), undefined);
 	});
 });
 

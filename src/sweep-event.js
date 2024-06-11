@@ -52,7 +52,7 @@ export default class SweepEvent {
 	 * @param {boolean} isLeft
 	 */
 	constructor(point, isLeft) {
-		if (point.events === undefined) {
+		if (point.events == null) {
 			point.events = [this];
 		} else {
 			point.events.push(this);
@@ -104,10 +104,10 @@ export default class SweepEvent {
 		const numEvents = this.point.events.length;
 		for (let i = 0; i < numEvents; i++) {
 			const evt1 = this.point.events[i];
-			if (evt1.segment.consumedBy !== undefined) continue;
+			if (evt1.segment.consumedBy != null) continue;
 			for (let j = i + 1; j < numEvents; j++) {
 				const evt2 = this.point.events[j];
-				if (evt2.consumedBy !== undefined) continue;
+				if (evt2.consumedBy != null) continue;
 				if (evt1.otherSE.point.events !== evt2.otherSE.point.events) continue;
 				evt1.segment.consume(evt2.segment);
 			}

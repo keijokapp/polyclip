@@ -46,27 +46,27 @@ function process(event, context) {
 
 	if (event.isLeft) tree.add(segment);
 
-	/** @type {Segment | null} */
+	/** @type {Segment | undefined} */
 	let prevSeg = segment;
-	/** @type {Segment | null} */
+	/** @type {Segment | undefined} */
 	let nextSeg = segment;
 
 	// skip consumed segments still in tree
 	do {
-		prevSeg = tree.lastBefore(prevSeg);
-	} while (prevSeg != null && prevSeg.consumedBy !== undefined);
+		prevSeg = tree.lastBefore(prevSeg) ?? undefined;
+	} while (prevSeg != null && prevSeg.consumedBy != null);
 
 	// skip consumed segments still in tree
 	do {
-		nextSeg = tree.firstAfter(nextSeg);
-	} while (nextSeg != null && nextSeg.consumedBy !== undefined);
+		nextSeg = tree.firstAfter(nextSeg) ?? undefined;
+	} while (nextSeg != null && nextSeg.consumedBy != null);
 
 	if (event.isLeft) {
 		// Check for intersections against the previous segment in the sweep line
-		let prevMySplitter = null;
+		let prevMySplitter;
 		if (prevSeg) {
 			const prevInter = prevSeg.getIntersection(segment);
-			if (prevInter !== null) {
+			if (prevInter != null) {
 				if (!segment.isAnEndpoint(prevInter)) prevMySplitter = prevInter;
 				if (!prevSeg.isAnEndpoint(prevInter)) {
 					const newEventsFromSplit = splitSafely(prevSeg, prevInter, context);
@@ -78,10 +78,10 @@ function process(event, context) {
 		}
 
 		// Check for intersections against the next segment in the sweep line
-		let nextMySplitter = null;
+		let nextMySplitter;
 		if (nextSeg) {
 			const nextInter = nextSeg.getIntersection(segment);
-			if (nextInter !== null) {
+			if (nextInter != null) {
 				if (!segment.isAnEndpoint(nextInter)) nextMySplitter = nextInter;
 				if (!nextSeg.isAnEndpoint(nextInter)) {
 					const newEventsFromSplit = splitSafely(nextSeg, nextInter, context);
@@ -95,10 +95,10 @@ function process(event, context) {
 		// For simplicity, even if we find more than one intersection we only
 		// spilt on the 'earliest' (sweep-line style) of the intersections.
 		// The other intersection will be handled in a future process().
-		if (prevMySplitter !== null || nextMySplitter !== null) {
-			let mySplitter = null;
-			if (prevMySplitter === null) mySplitter = nextMySplitter;
-			else if (nextMySplitter === null) mySplitter = prevMySplitter;
+		if (prevMySplitter != null || nextMySplitter != null) {
+			let mySplitter;
+			if (prevMySplitter == null) mySplitter = nextMySplitter;
+			else if (nextMySplitter == null) mySplitter = prevMySplitter;
 			else {
 				const cmpSplitters = SweepEvent.comparePoints(
 					prevMySplitter,
@@ -138,7 +138,7 @@ function process(event, context) {
 		// intersections between our previous and next segments
 		if (prevSeg && nextSeg) {
 			const inter = prevSeg.getIntersection(nextSeg);
-			if (inter !== null) {
+			if (inter != null) {
 				if (!prevSeg.isAnEndpoint(inter)) {
 					const newEventsFromSplit = splitSafely(prevSeg, inter, context);
 					for (let i = 0, iMax = newEventsFromSplit.length; i < iMax; i++) {
@@ -178,8 +178,11 @@ function splitSafely(seg, pt, { tree, queue }) {
 	queue.delete(rightSE);
 	const newEvents = seg.split(pt);
 	newEvents.push(rightSE);
+
 	// splitting can trigger consumption
-	if (seg.consumedBy === undefined) tree.add(seg);
+	if (seg.consumedBy == null) {
+		tree.add(seg);
+	}
 
 	return newEvents;
 }
@@ -211,7 +214,7 @@ export default function sweepLine(multipolys) {
 		const newEvents = process(evt, context);
 
 		newEvents.forEach(event => {
-			if (event.consumedBy === undefined) {
+			if (event.consumedBy == null) {
 				queue.add(event);
 			}
 		});

@@ -159,14 +159,14 @@ export default class Segment {
 		this.rightSE = rightSE;
 		rightSE.segment = this;
 		rightSE.otherSE = leftSE;
-		/** @type {import('./geom-in.js').RingIn[] | null} */
+		/** @type {import('./geom-in.js').RingIn[]} */
 		this.rings = rings;
-		/** @type {number[] | null} */
+		/** @type {number[]} */
 		this.windings = windings;
 
 		/** @type {Segment | undefined} */
 		this.consumedBy = undefined;
-		/** @type {Segment | null | undefined} */
+		/** @type {Segment | undefined} */
 		this.prev = undefined;
 		/** @type {State | undefined} */
 		this._beforeState = undefined;
@@ -174,6 +174,8 @@ export default class Segment {
 		this._afterState = undefined;
 		/** @type {boolean | undefined} */
 		this._isInResult = undefined;
+		/** @type {Segment | null | undefined} */
+		this._prevInResult = undefined;
 	}
 
 	/**
@@ -283,17 +285,17 @@ export default class Segment {
 	 *   * endpoint of segB with point along segA --> non-trivial
 	 *   * point along segA with point along segB --> non-trivial
 	 *
-	 * If no non-trivial intersection exists, return null
-	 * Else, return null.
+	 * If no non-trivial intersection exists, return undefined
+	 * Else, return undefined.
 	 * @param {Segment} other
-	 * @returns {import('./sweep-event.js').Point | null}
+	 * @returns {import('./sweep-event.js').Point | undefined}
 	 */
 	getIntersection(other) {
 		// If bboxes don't overlap, there can't be any intersections
 		const tBbox = this.bbox();
 		const oBbox = other.bbox();
 		const bboxOverlap = getBboxOverlap(tBbox, oBbox);
-		if (bboxOverlap == null) return null;
+		if (bboxOverlap == null) return;
 
 		// We first check to see if the endpoints can be considered intersections.
 		// This will 'snap' intersections to endpoints if possible, and will
@@ -321,14 +323,14 @@ export default class Segment {
 
 			// either the two segments match exactly (two trival intersections)
 			// or just on their left endpoint (one trivial intersection
-			return null;
+			return;
 		}
 
 		// does this left endpoint matches (other doesn't)
 		if (touchesThisLSE) {
 			// check for segments that just intersect on opposing endpoints
 			if (touchesOtherRSE) {
-				if (tlp.x.eq(orp.x) && tlp.y.eq(orp.y)) return null;
+				if (tlp.x.eq(orp.x) && tlp.y.eq(orp.y)) return;
 			}
 
 			// t-intersection on left endpoint
@@ -339,7 +341,7 @@ export default class Segment {
 		if (touchesOtherLSE) {
 			// check for segments that just intersect on opposing endpoints
 			if (touchesThisRSE) {
-				if (trp.x.eq(olp.x) && trp.y.eq(olp.y)) return null;
+				if (trp.x.eq(olp.x) && trp.y.eq(olp.y)) return;
 			}
 
 			// t-intersection on left endpoint
@@ -347,7 +349,7 @@ export default class Segment {
 		}
 
 		// trivial intersection on right endpoints
-		if (touchesThisRSE && touchesOtherRSE) return null;
+		if (touchesThisRSE && touchesOtherRSE) return;
 
 		// t-intersections on just one right endpoint
 		if (touchesThisRSE) return trp;
@@ -359,10 +361,10 @@ export default class Segment {
 
 		// are the segments parrallel? Note that if they were colinear with overlap,
 		// they would have an endpoint intersection and that case was already handled above
-		if (pt === null) return null;
+		if (pt == null) return;
 
 		// is the intersection found between the lines not on the segments?
-		if (!isInBbox(bboxOverlap, pt)) return null;
+		if (!isInBbox(bboxOverlap, pt)) return;
 
 		// round the the computed point if needed
 		return /** @type {import('./sweep-event.js').Point} */(precision.snap(pt));
@@ -383,7 +385,7 @@ export default class Segment {
 	 */
 	split(point) {
 		const newEvents = [];
-		const alreadyLinked = point.events !== undefined;
+		const alreadyLinked = point.events != null;
 
 		const newLeftSE = new SweepEvent(point, true);
 		const newRightSE = new SweepEvent(point, false);
@@ -394,8 +396,8 @@ export default class Segment {
 		const newSeg = new Segment(
 			newLeftSE,
 			oldRightSE,
-			/** @type {import('./geom-in.js').RingIn[]} */(this.rings).slice(),
-			/** @type {number[]} */(this.windings).slice()
+			this.rings.slice(),
+			this.windings.slice()
 		);
 
 		// when splitting a nearly vertical downward-facing segment,
@@ -428,8 +430,8 @@ export default class Segment {
 		this.leftSE = tmpEvt;
 		this.leftSE.isLeft = true;
 		this.rightSE.isLeft = false;
-		for (let i = 0, iMax = /** @type {number[]} */(this.windings).length; i < iMax; i++) {
-			/** @type {number[]} */(this.windings)[i] *= -1;
+		for (let i = 0, iMax = this.windings.length; i < iMax; i++) {
+			this.windings[i] *= -1;
 		}
 	}
 
@@ -462,24 +464,20 @@ export default class Segment {
 			consumee = tmp;
 		}
 
-		const consumerRings = /** @type {import('./geom-in.js').RingIn[]} */(consumer.rings);
-		const consumerWindings = /** @type {number[]} */(consumer.windings);
-		const consumeeRings = /** @type {import('./geom-in.js').RingIn[]} */(consumee.rings);
-		const consumeeWindings = /** @type {number[]} */(consumee.windings);
-
-		for (let i = 0, iMax = consumeeRings.length; i < iMax; i++) {
-			const ring = consumeeRings[i];
-			const winding = consumeeWindings[i];
-			const index = consumerRings.indexOf(ring);
+		for (let i = 0, iMax = consumee.rings.length; i < iMax; i++) {
+			const ring = consumee.rings[i];
+			const winding = consumee.windings[i];
+			const index = consumer.rings.indexOf(ring);
 			if (index === -1) {
-				consumerRings.push(ring);
-				consumerWindings.push(winding);
+				consumer.rings.push(ring);
+				consumer.windings.push(winding);
 			} else {
-				consumerWindings[index] += winding;
+				consumer.windings[index] += winding;
 			}
 		}
-		consumee.rings = null;
-		consumee.windings = null;
+		// TODO: setting these to `undefined` doesn't seem to be necessary
+		consumee.rings = /** @type {any} */(undefined);
+		consumee.windings = /** @type {any} */(undefined);
 		consumee.consumedBy = consumer;
 
 		// mark sweep events consumed as to maintain ordering in sweep event queue
@@ -496,7 +494,7 @@ export default class Segment {
 		if (this._prevInResult === undefined) {
 			if (!this.prev) this._prevInResult = null;
 			else if (this.prev.isInResult(context)) this._prevInResult = this.prev;
-			else this._prevInResult = this.prev.prevInResult(context);
+			else this._prevInResult = this.prev.prevInResult(context) ?? null;
 		}
 
 		return this._prevInResult ?? undefined;
@@ -506,23 +504,24 @@ export default class Segment {
 	 * @returns {State}
 	 */
 	beforeState() {
-		if (this._beforeState !== undefined) return this._beforeState;
-		if (!this.prev) {
-			this._beforeState = {
-				rings: [],
-				windings: [],
-				multiPolys: []
-			};
-		} else {
-			const seg = this.prev.consumedBy || this.prev;
-			this._beforeState = seg.afterState();
+		if (this._beforeState == null) {
+			if (!this.prev) {
+				this._beforeState = {
+					rings: [],
+					windings: [],
+					multiPolys: []
+				};
+			} else {
+				const seg = this.prev.consumedBy || this.prev;
+				this._beforeState = seg.afterState();
+			}
 		}
 
 		return this._beforeState;
 	}
 
 	afterState() {
-		if (this._afterState !== undefined) return this._afterState;
+		if (this._afterState != null) return this._afterState;
 
 		const beforeState = this.beforeState();
 		this._afterState = {
@@ -534,15 +533,10 @@ export default class Segment {
 		const windingsAfter = this._afterState.windings;
 		const mpsAfter = this._afterState.multiPolys;
 
-		// eslint-disable-next-line prefer-destructuring
-		const rings = /** @type {import('./geom-in.js').RingIn[]} */(this.rings);
-		// eslint-disable-next-line prefer-destructuring
-		const windings = /** @type {number[]} */(this.windings);
-
 		// calculate ringsAfter, windingsAfter
-		for (let i = 0, iMax = rings.length; i < iMax; i++) {
-			const ring = rings[i];
-			const winding = windings[i];
+		for (let i = 0, iMax = this.rings.length; i < iMax; i++) {
+			const ring = this.rings[i];
+			const winding = this.windings[i];
 			const index = ringsAfter.indexOf(ring);
 			if (index === -1) {
 				ringsAfter.push(ring);
@@ -582,9 +576,9 @@ export default class Segment {
 	 */
 	isInResult({ operationType, multipolygonCount }) {
 		// if we've been consumed, we're not in the result
-		if (this.consumedBy) return false;
+		if (this.consumedBy != null) return false;
 
-		if (this._isInResult !== undefined) return this._isInResult;
+		if (this._isInResult != null) return this._isInResult;
 
 		const mpsBefore = this.beforeState().multiPolys;
 		const mpsAfter = this.afterState().multiPolys;
