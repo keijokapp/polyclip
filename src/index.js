@@ -4,7 +4,7 @@ import runOperation from './operation.js';
 import { precision } from './precision.js';
 
 /**
- * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @param {[import('polyclip').Geometry, ...import('polyclip').Geometry[]]} geoms
  * @returns {import('polyclip').MultiPolygon}
  */
 export function union(...geoms) {
@@ -12,7 +12,7 @@ export function union(...geoms) {
 }
 
 /**
- * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @param {[import('polyclip').Geometry, ...import('polyclip').Geometry[]]} geoms
  * @returns {import('polyclip').MultiPolygon}
  */
 export function intersection(...geoms) {
@@ -20,7 +20,7 @@ export function intersection(...geoms) {
 }
 
 /**
- * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @param {[import('polyclip').Geometry, ...import('polyclip').Geometry[]]} geoms
  * @returns {import('polyclip').MultiPolygon}
  */
 export function xor(...geoms) {
@@ -28,7 +28,7 @@ export function xor(...geoms) {
 }
 
 /**
- * @param {[import('polyclip').Geom, ...import('polyclip').Geom[]]} geoms
+ * @param {[import('polyclip').Geometry, ...import('polyclip').Geometry[]]} geoms
  * @returns {import('polyclip').MultiPolygon}
  */
 export function difference(...geoms) {

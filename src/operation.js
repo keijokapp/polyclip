@@ -13,7 +13,7 @@ import sweepLine from './sweep-line.js';
 
 /**
  * @param {OperationType} type
- * @param {import('polyclip').Geom[]} geoms
+ * @param {import('polyclip').Geometry[]} geoms
  * @returns {import('polyclip').MultiPolygon}
  */
 export default function runOperation(type, geoms) {
