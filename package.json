@@ -8,7 +8,7 @@
   "types": "./src/polyclip.d.ts",
   "scripts": {
     "bench": "node bench/bench.js",
-    "lint": "eslint *.js bench src",
+    "lint": "eslint *.js bench src test",
     "prepublishOnly": "npm-run-all --serial lint test bench",
     "test": "jest",
     "typecheck": "tsc"
@@ -37,10 +37,9 @@
     "@arbendium/eslint-config-base": "^0.2.2",
     "@babel/plugin-transform-modules-commonjs": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
+    "@jest/globals": "^29.7.0",
     "@turf/union": "^6.5.0",
     "@types/node": "^20.14.2",
-    "@typescript-eslint/eslint-plugin": "^7.12.0",
-    "@typescript-eslint/parser": "^7.12.0",
     "benchmark": "^2.1.4",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
