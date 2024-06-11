@@ -21,17 +21,17 @@ polyclip.difference  (poly1, poly2 /* , poly3, ... */)
 ```javascript
 /* All functions take one or more [multi]polygon(s) as input */
 
-polyclip.union       (geom, ...moreGeoms)
-polyclip.intersection(geom, ...moreGeoms)
-polyclip.xor         (geom, ...moreGeoms)
+polyclip.union       (geometry, ...otherGeometries)
+polyclip.intersection(geometry, ...otherGeometries)
+polyclip.xor         (geometry, ...otherGeometries)
 
-/* The moreGeoms will be subtracted from the geom */
-polyclip.difference  (geom, ...moreGeoms)
+/* The `otherGeometries` will be subtracted from `geometry` */
+polyclip.difference  (geometry, ...otherGeometries)
 ```
 
 ### Input
 
-Each positional argument (`geom`) may be either a Polygon or a MultiPolygon. The [GeoJSON spec](https://tools.ietf.org/html/rfc7946#section-3.1) is followed, with the following notes/modifications:
+Each positional argument may be either a Polygon or a MultiPolygon. The [GeoJSON spec](https://tools.ietf.org/html/rfc7946#section-3.1) is followed, with the following notes/modifications:
 
 - MultiPolygons may contain touching or overlapping Polygons.
 - rings are not required to be self-closing.

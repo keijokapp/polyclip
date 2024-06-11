@@ -13,11 +13,11 @@ import sweepLine from './sweep-line.js';
 
 /**
  * @param {OperationType} type
- * @param {import('polyclip').Geometry[]} geoms
+ * @param {import('polyclip').Geometry[]} geometries
  * @returns {import('polyclip').MultiPolygon}
  */
-export default function runOperation(type, geoms) {
-	const multipolygons = geoms.map(geom => normalizePolygon(geom));
+export default function runOperation(type, geometries) {
+	const multipolygons = geometries.map(geometry => normalizePolygon(geometry));
 
 	/* BBox optimization for difference operation
 	 * If the bbox of a multipolygon that's part of the clipping doesn't

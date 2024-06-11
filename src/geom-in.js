@@ -80,29 +80,29 @@ export function createInputPolygon(mulitpolygon, isSubject) {
 }
 
 /**
- * @param {import('polyclip').Geom<[number, number]>} geom
+ * @param {import('polyclip').Geometry<[number, number]>} geometry
  * @returns {import('polyclip').MultiPolygon<import('./vector.js').Vector>}
  */
-export function normalizePolygon(geom) {
-	if (!Array.isArray(geom)) {
+export function normalizePolygon(geometry) {
+	if (!Array.isArray(geometry)) {
 		throw new Error('Input geometry is not a valid Polygon or MultiPolygon');
 	}
 
 	try {
 		// if the input looks like a polygon, convert it to a multipolygon
-		if (typeof geom[0][0][0] === 'number') {
-			geom = [/** @type {import('polyclip').Polygon} */(geom)];
+		if (typeof geometry[0][0][0] === 'number') {
+			geometry = [/** @type {import('polyclip').Polygon} */(geometry)];
 		}
 	} catch (ex) {
 		// The input is either malformed or has empty arrays.
 		// In either case, it will be handled later on.
 	}
 
-	if (!Array.isArray(geom)) {
+	if (!Array.isArray(geometry)) {
 		throw new Error('Input geometry is not a valid Polygon or MultiPolygon');
 	}
 
-	return /** @type {import('polyclip').MultiPolygon} */(geom).map(polygon => {
+	return /** @type {import('polyclip').MultiPolygon} */(geometry).map(polygon => {
 		if (!Array.isArray(polygon) || polygon.length === 0) {
 			throw new Error('Input geometry is not a valid Polygon or MultiPolygon');
 		}
