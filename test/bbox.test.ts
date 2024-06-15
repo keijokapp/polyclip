@@ -36,19 +36,19 @@ describe("bbox overlap", () => {
   describe("disjoint - none", () => {
     test("above", () => {
       const b2 = {ll: {x: new BigNumber(7), y: new BigNumber(7)}, ur: {x: new BigNumber(8), y: new BigNumber(8)}}
-      expect(getBboxOverlap(b1, b2)).toBeNull()
+      expect(getBboxOverlap(b1, b2)).toBeUndefined()
     })
     test("left", () => {
       const b2 = {ll: {x: new BigNumber(1), y: new BigNumber(5)}, ur: {x: new BigNumber(3), y: new BigNumber(8)}}
-      expect(getBboxOverlap(b1, b2)).toBeNull()
+      expect(getBboxOverlap(b1, b2)).toBeUndefined()
     })
     test("down", () => {
       const b2 = {ll: {x: new BigNumber(2), y: new BigNumber(2)}, ur: {x: new BigNumber(3), y: new BigNumber(3)}}
-      expect(getBboxOverlap(b1, b2)).toBeNull()
+      expect(getBboxOverlap(b1, b2)).toBeUndefined()
     })
     test("right", () => {
       const b2 = {ll: {x: new BigNumber(12), y: new BigNumber(1)}, ur: {x: new BigNumber(14), y: new BigNumber(9)}}
-      expect(getBboxOverlap(b1, b2)).toBeNull()
+      expect(getBboxOverlap(b1, b2)).toBeUndefined()
     })
   })
 
@@ -156,7 +156,7 @@ describe("bbox overlap", () => {
     describe("vertical line & normal", () => {
       test("no overlap", () => {
         const b2 = {ll: {x: new BigNumber(7), y: new BigNumber(3)}, ur: {x: new BigNumber(7), y: new BigNumber(6)}}
-        expect(getBboxOverlap(b1, b2)).toBeNull()
+        expect(getBboxOverlap(b1, b2)).toBeUndefined()
       })
 
       test("point overlap", () => {
@@ -179,7 +179,7 @@ describe("bbox overlap", () => {
     describe("horizontal line & normal", () => {
       test("no overlap", () => {
         const b2 = {ll: {x: new BigNumber(3), y: new BigNumber(7)}, ur: {x: new BigNumber(6), y: new BigNumber(7)}}
-        expect(getBboxOverlap(b1, b2)).toBeNull()
+        expect(getBboxOverlap(b1, b2)).toBeUndefined()
       })
 
       test("point overlap", () => {
@@ -203,7 +203,7 @@ describe("bbox overlap", () => {
       const v1 = {ll: {x: new BigNumber(4), y: new BigNumber(4)}, ur: {x: new BigNumber(4), y: new BigNumber(6)}}
       test("no overlap", () => {
         const v2 = {ll: {x: new BigNumber(4), y: new BigNumber(7)}, ur: {x: new BigNumber(4), y: new BigNumber(8)}}
-        expect(getBboxOverlap(v1, v2)).toBeNull()
+        expect(getBboxOverlap(v1, v2)).toBeUndefined()
       })
 
       test("point overlap", () => {
@@ -227,7 +227,7 @@ describe("bbox overlap", () => {
       const h1 = {ll: {x: new BigNumber(4), y: new BigNumber(6)}, ur: {x: new BigNumber(7), y: new BigNumber(6)}}
       test("no overlap", () => {
         const h2 = {ll: {x: new BigNumber(4), y: new BigNumber(5)}, ur: {x: new BigNumber(7), y: new BigNumber(5)}}
-        expect(getBboxOverlap(h1, h2)).toBeNull()
+        expect(getBboxOverlap(h1, h2)).toBeUndefined()
       })
 
       test("point overlap", () => {
@@ -251,7 +251,7 @@ describe("bbox overlap", () => {
       test("no overlap", () => {
         const h1 = {ll: {x: new BigNumber(4), y: new BigNumber(6)}, ur: {x: new BigNumber(8), y: new BigNumber(6)}}
         const v1 = {ll: {x: new BigNumber(5), y: new BigNumber(7)}, ur: {x: new BigNumber(5), y: new BigNumber(9)}}
-        expect(getBboxOverlap(h1, v1)).toBeNull()
+        expect(getBboxOverlap(h1, v1)).toBeUndefined()
       })
 
       test("point overlap", () => {
@@ -287,7 +287,7 @@ describe("bbox overlap", () => {
     describe("point & normal", () => {
       test("no overlap", () => {
         const p = {ll: {x: new BigNumber(2), y: new BigNumber(2)}, ur: {x: new BigNumber(2), y: new BigNumber(2)}}
-        expect(getBboxOverlap(b1, p)).toBeNull()
+        expect(getBboxOverlap(b1, p)).toBeUndefined()
       })
       test("point overlap", () => {
         const p = {ll: {x: new BigNumber(5), y: new BigNumber(5)}, ur: {x: new BigNumber(5), y: new BigNumber(5)}}
@@ -299,7 +299,7 @@ describe("bbox overlap", () => {
       test("no overlap", () => {
         const p = {ll: {x: new BigNumber(2), y: new BigNumber(2)}, ur: {x: new BigNumber(2), y: new BigNumber(2)}}
         const l = {ll: {x: new BigNumber(4), y: new BigNumber(6)}, ur: {x: new BigNumber(4), y: new BigNumber(8)}}
-        expect(getBboxOverlap(l, p)).toBeNull()
+        expect(getBboxOverlap(l, p)).toBeUndefined()
       })
       test("point overlap", () => {
         const p = {ll: {x: new BigNumber(5), y: new BigNumber(5)}, ur: {x: new BigNumber(5), y: new BigNumber(5)}}
@@ -312,7 +312,7 @@ describe("bbox overlap", () => {
       test("no overlap", () => {
         const p1 = {ll: {x: new BigNumber(2), y: new BigNumber(2)}, ur: {x: new BigNumber(2), y: new BigNumber(2)}}
         const p2 = {ll: {x: new BigNumber(4), y: new BigNumber(6)}, ur: {x: new BigNumber(4), y: new BigNumber(6)}}
-        expect(getBboxOverlap(p1, p2)).toBeNull()
+        expect(getBboxOverlap(p1, p2)).toBeUndefined()
       })
       test("point overlap", () => {
         const p = {ll: {x: new BigNumber(5), y: new BigNumber(5)}, ur: {x: new BigNumber(5), y: new BigNumber(5)}}

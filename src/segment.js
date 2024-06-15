@@ -296,7 +296,7 @@ export default class Segment {
 		const tBbox = this.bbox();
 		const oBbox = other.bbox();
 		const bboxOverlap = getBboxOverlap(tBbox, oBbox);
-		if (bboxOverlap === null) return null;
+		if (bboxOverlap == null) return null;
 
 		// We first check to see if the endpoints can be considered intersections.
 		// This will 'snap' intersections to endpoints if possible, and will

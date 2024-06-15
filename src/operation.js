@@ -48,7 +48,7 @@ export function runOperation(type, geom, moreGeoms) {
 		const subject = multipolys[0];
 		let i = 1;
 		while (i < multipolys.length) {
-			if (getBboxOverlap(multipolys[i].bbox, subject.bbox) !== null) i++;
+			if (getBboxOverlap(multipolys[i].bbox, subject.bbox) != null) i++;
 			else multipolys.splice(i, 1);
 		}
 	}
@@ -62,7 +62,7 @@ export function runOperation(type, geom, moreGeoms) {
 		for (let i = 0, iMax = multipolys.length; i < iMax; i++) {
 			const mpA = multipolys[i];
 			for (let j = i + 1, jMax = multipolys.length; j < jMax; j++) {
-				if (getBboxOverlap(mpA.bbox, multipolys[j].bbox) === null) return [];
+				if (getBboxOverlap(mpA.bbox, multipolys[j].bbox) == null) return [];
 			}
 		}
 	}
