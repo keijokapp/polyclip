@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import BigNumber from 'bignumber.js';
-import { precision } from '../src/precision.js';
+import { precision } from '../lib/precision.js';
 
 describe('compare vector angles', () => {
 	test('colinear', () => {

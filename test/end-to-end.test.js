@@ -5,7 +5,7 @@ import { describe, test } from 'node:test';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
-import * as polyclip from '../src/index.js';
+import * as polyclip from '../lib/index.js';
 
 const directoryName = path.dirname(url.fileURLToPath(import.meta.url));
 

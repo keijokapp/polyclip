@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import BigNumber from 'bignumber.js';
-import { getBboxOverlap, isInBbox } from '../src/bbox.js';
+import { getBboxOverlap, isInBbox } from '../lib/bbox.js';
 
 describe('is in bbox', () => {
 	test('outside', () => {

@@ -4,7 +4,7 @@ import fs from 'fs';
 import Benchmark from 'benchmark';
 import jstsUnion from '@turf/union';
 import w8r from 'martinez-polygon-clipping';
-import * as polyclip from '../src/index.js';
+import * as polyclip from '../lib/index.js';
 
 const options = {
 	onStart() {
