@@ -209,7 +209,7 @@ describe('verticalIntersection()', () => {
 		const p = { x: new BigNumber(42), y: new BigNumber(3) };
 		const v = { x: new BigNumber(-2), y: new BigNumber(0) };
 		const x = new BigNumber(37);
-		const i = /** @type {import('../lib/vector').Vector} */(verticalIntersection(p, v, x));
+		const i = /** @type {import('../lib/vector.js').Vector} */(verticalIntersection(p, v, x));
 		assert.deepStrictEqual(i.x, new BigNumber(37));
 		assert.deepStrictEqual(i.y, new BigNumber(3));
 	});
@@ -225,7 +225,7 @@ describe('verticalIntersection()', () => {
 		const p = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v = { x: new BigNumber(1), y: new BigNumber(1) };
 		const x = new BigNumber(-2);
-		const i = /** @type {import('../lib/vector').Vector} */(verticalIntersection(p, v, x));
+		const i = /** @type {import('../lib/vector.js').Vector} */(verticalIntersection(p, v, x));
 		assert.deepStrictEqual(i.x, new BigNumber(-2));
 		assert.deepStrictEqual(i.y, new BigNumber(-2));
 	});
@@ -234,7 +234,7 @@ describe('verticalIntersection()', () => {
 		const p = { x: new BigNumber(-1), y: new BigNumber(1) };
 		const v = { x: new BigNumber(-2), y: new BigNumber(1) };
 		const x = new BigNumber(-3);
-		const i = /** @type {import('../lib/vector').Vector} */(verticalIntersection(p, v, x));
+		const i = /** @type {import('../lib/vector.js').Vector} */(verticalIntersection(p, v, x));
 		assert.deepStrictEqual(i.x, new BigNumber(-3));
 		assert.deepStrictEqual(i.y, new BigNumber(2));
 	});
@@ -252,7 +252,7 @@ describe('horizontalIntersection()', () => {
 		const p = { x: new BigNumber(42), y: new BigNumber(3) };
 		const v = { x: new BigNumber(0), y: new BigNumber(4) };
 		const y = new BigNumber(37);
-		const i = /** @type {import('../lib/vector').Vector} */(horizontalIntersection(p, v, y));
+		const i = /** @type {import('../lib/vector.js').Vector} */(horizontalIntersection(p, v, y));
 		assert.deepStrictEqual(i.x, new BigNumber(42));
 		assert.deepStrictEqual(i.y, new BigNumber(37));
 	});
@@ -261,7 +261,7 @@ describe('horizontalIntersection()', () => {
 		const p = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v = { x: new BigNumber(1), y: new BigNumber(1) };
 		const y = new BigNumber(4);
-		const i = /** @type {import('../lib/vector').Vector} */(horizontalIntersection(p, v, y));
+		const i = /** @type {import('../lib/vector.js').Vector} */(horizontalIntersection(p, v, y));
 		assert.deepStrictEqual(i.x, new BigNumber(4));
 		assert.deepStrictEqual(i.y, new BigNumber(4));
 	});
@@ -270,7 +270,7 @@ describe('horizontalIntersection()', () => {
 		const p = { x: new BigNumber(-1), y: new BigNumber(-1) };
 		const v = { x: new BigNumber(-2), y: new BigNumber(-1) };
 		const y = new BigNumber(-3);
-		const i = /** @type {import('../lib/vector').Vector} */(horizontalIntersection(p, v, y));
+		const i = /** @type {import('../lib/vector.js').Vector} */(horizontalIntersection(p, v, y));
 		assert.deepStrictEqual(i.x, new BigNumber(-5));
 		assert.deepStrictEqual(i.y, new BigNumber(-3));
 	});
@@ -290,7 +290,7 @@ describe('intersection()', () => {
 	test('horizontal and vertical', () => {
 		const v1 = { x: new BigNumber(0), y: new BigNumber(2) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(0) };
-		const i = /** @type {import('../lib/vector').Vector} */(intersection(p1, v1, p2, v2));
+		const i = /** @type {import('../lib/vector.js').Vector} */(intersection(p1, v1, p2, v2));
 		assert.deepStrictEqual(i.x, new BigNumber(42));
 		assert.deepStrictEqual(i.y, new BigNumber(46));
 	});
@@ -298,7 +298,7 @@ describe('intersection()', () => {
 	test('horizontal', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(0) };
-		const i = /** @type {import('../lib/vector').Vector} */(intersection(p1, v1, p2, v2));
+		const i = /** @type {import('../lib/vector.js').Vector} */(intersection(p1, v1, p2, v2));
 		assert.deepStrictEqual(i.x, new BigNumber(46));
 		assert.deepStrictEqual(i.y, new BigNumber(46));
 	});
@@ -306,7 +306,7 @@ describe('intersection()', () => {
 	test('vertical', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v2 = { x: new BigNumber(0), y: new BigNumber(1) };
-		const i = /** @type {import('../lib/vector').Vector} */(intersection(p1, v1, p2, v2));
+		const i = /** @type {import('../lib/vector.js').Vector} */(intersection(p1, v1, p2, v2));
 		assert.deepStrictEqual(i.x, new BigNumber(-32));
 		assert.deepStrictEqual(i.y, new BigNumber(-32));
 	});
@@ -314,7 +314,7 @@ describe('intersection()', () => {
 	test('45 degree & 135 degree', () => {
 		const v1 = { x: new BigNumber(1), y: new BigNumber(1) };
 		const v2 = { x: new BigNumber(-1), y: new BigNumber(1) };
-		const i = /** @type {import('../lib/vector').Vector} */(intersection(p1, v1, p2, v2));
+		const i = /** @type {import('../lib/vector.js').Vector} */(intersection(p1, v1, p2, v2));
 		assert.deepStrictEqual(i.x, new BigNumber(7));
 		assert.deepStrictEqual(i.y, new BigNumber(7));
 	});
@@ -327,8 +327,8 @@ describe('intersection()', () => {
 		const v2 = {
 			x: new BigNumber(0.000024999999999941735), y: new BigNumber(0.000049000000004184585)
 		};
-		const i1 = /** @type {import('../lib/vector').Vector} */(intersection(p1, v1, p2, v2));
-		const i2 = /** @type {import('../lib/vector').Vector} */(intersection(p2, v2, p1, v1));
+		const i1 = /** @type {import('../lib/vector.js').Vector} */(intersection(p1, v1, p2, v2));
+		const i2 = /** @type {import('../lib/vector.js').Vector} */(intersection(p2, v2, p1, v1));
 		assert.deepStrictEqual(i1.x, i2.x);
 		assert.deepStrictEqual(i1.y, i2.y);
 	});
