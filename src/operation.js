@@ -69,32 +69,20 @@ export function runOperation(type, geom, moreGeoms) {
 
 	/* Put segment endpoints in a priority queue */
 	const queue = new SplayTreeSet(SweepEvent.compare);
-	for (let i = 0, iMax = multipolys.length; i < iMax; i++) {
-		const sweepEvents = multipolys[i].getSweepEvents();
-		for (let j = 0, jMax = sweepEvents.length; j < jMax; j++) {
-			queue.add(sweepEvents[j]);
-		}
-	}
+	queue.addAll(multipolys.flatMap(poly => poly.getSweepEvents()));
 
 	/* Pass the sweep line over those endpoints */
 	const sweepLine = new SweepLine(queue);
-	let evt = null;
-	if (queue.size !== 0) {
-		evt = queue.first();
+	while (queue.size !== 0) {
+		const evt = queue.first();
 		queue.delete(evt);
-	}
-	while (evt) {
+
 		const newEvents = sweepLine.process(evt);
-		for (let i = 0, iMax = newEvents.length; i < iMax; i++) {
-			const evt = newEvents[i];
-			if (evt.consumedBy === undefined) queue.add(evt);
-		}
-		if (queue.size !== 0) {
-			evt = queue.first();
-			queue.delete(evt);
-		} else {
-			evt = null;
-		}
+		newEvents.forEach(evt => {
+			if (evt.consumedBy === undefined) {
+				queue.add(evt);
+			}
+		});
 	}
 
 	// free some memory we don't need anymore
