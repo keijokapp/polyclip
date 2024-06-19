@@ -3,8 +3,8 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "lib": ["esnext"],
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noEmit": true,
     "strict": true
   },

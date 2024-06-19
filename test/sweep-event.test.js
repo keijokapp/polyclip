@@ -7,18 +7,23 @@ import { BigNumber } from 'bignumber.js';
 import Segment from '../lib/segment.js';
 import SweepEvent from '../lib/sweep-event.js';
 
+/**
+ * @param {number} x
+ * @param {number} y
+ * @returns {import('../lib/sweep-event.js').Point}
+ */
+function point(x, y) {
+	return { x: new BigNumber(x), y: new BigNumber(y), events: [] };
+}
+
 describe('sweep event compare', () => {
 	test('favor earlier x in point', () => {
 		const s1 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-5), y: new BigNumber(4) }
-			),
+			point(-5, 4),
 			/** @type {any} */(undefined)
 		);
 		const s2 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(1) }
-			),
+			point(5, 1),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(s1, s2), -1);
@@ -27,14 +32,11 @@ describe('sweep event compare', () => {
 
 	test('then favor earlier y in point', () => {
 		const s1 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(-4) }
-			), /** @type {any} */(undefined)
+			point(5, -4),
+			/** @type {any} */(undefined)
 		);
 		const s2 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(4) }
-			),
+			point(5, 4),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(s1, s2), -1);
@@ -43,21 +45,13 @@ describe('sweep event compare', () => {
 
 	test('then favor right events over left', () => {
 		const seg1 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(4) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(2) }
-			),
+			point(5, 4),
+			point(3, 2),
 			/** @type {any} */(undefined)
 		);
 		const seg2 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(4) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(6), y: new BigNumber(5) }
-			),
+			point(5, 4),
+			point(6, 5),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.rightSE, seg2.leftSE), -1);
@@ -66,21 +60,13 @@ describe('sweep event compare', () => {
 
 	test('then favor non-vertical segments for left events', () => {
 		const seg1 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(2) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(4) }
-			),
+			point(3, 2),
+			point(3, 4),
 			/** @type {any} */(undefined)
 		);
 		const seg2 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(2) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(4) }
-			),
+			point(3, 2),
+			point(5, 4),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
@@ -89,21 +75,13 @@ describe('sweep event compare', () => {
 
 	test('then favor vertical segments for right events', () => {
 		const seg1 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(4) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(2) }
-			),
+			point(3, 4),
+			point(3, 2),
 			/** @type {any} */(undefined)
 		);
 		const seg2 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(4) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(2) }
-			),
+			point(3, 4),
+			point(1, 2),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
@@ -112,21 +90,13 @@ describe('sweep event compare', () => {
 
 	test('then favor lower segment', () => {
 		const seg1 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(4), y: new BigNumber(4) }
-			),
+			point(0, 0),
+			point(4, 4),
 			/** @type {any} */(undefined)
 		);
 		const seg2 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(6) }
-			),
+			point(0, 0),
+			point(5, 6),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
@@ -139,21 +109,13 @@ describe('sweep event compare', () => {
 	// is able to better determine what is and is not colinear.
 	test('and favor barely lower segment', () => {
 		const seg1 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-75.725), y: new BigNumber(45.357) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-75.72484615384616), y: new BigNumber(45.35723076923077) }
-			),
+			point(-75.725, 45.357),
+			point(-75.72484615384616, 45.35723076923077),
 			/** @type {any} */(undefined)
 		);
 		const seg2 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-75.725), y: new BigNumber(45.357) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-75.723), y: new BigNumber(45.36) }
-			),
+			point(-75.725, 45.357),
+			point(-75.723, 45.36),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), 1);
@@ -162,21 +124,13 @@ describe('sweep event compare', () => {
 
 	test('then favor lower ring id', () => {
 		const seg1 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(4), y: new BigNumber(4) }
-			),
+			point(0, 0),
+			point(4, 4),
 			/** @type {any} */({ id: 1 })
 		);
 		const seg2 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(5), y: new BigNumber(5) }
-			),
+			point(0, 0),
+			point(5, 5),
 			/** @type {any} */({ id: 2 })
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), -1);
@@ -185,15 +139,11 @@ describe('sweep event compare', () => {
 
 	test('identical equal', () => {
 		const s1 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		const s3 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(3) }
-			),
+			point(3, 3),
 			/** @type {any} */(undefined)
 		);
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
@@ -203,21 +153,15 @@ describe('sweep event compare', () => {
 
 	test('totally equal but not identical events are consistent', () => {
 		const s1 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		const s2 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		const s3 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(3), y: new BigNumber(3) }
-			),
+			point(3, 3),
 			/** @type {any} */(undefined)
 		);
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
@@ -229,23 +173,17 @@ describe('sweep event compare', () => {
 
 	test('events are linked as side effect', () => {
 		const s1 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		const s2 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			s1,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(2), y: new BigNumber(2) }
-				),
+				point(2, 2),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -254,9 +192,8 @@ describe('sweep event compare', () => {
 		new Segment(
 			s2,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(3), y: new BigNumber(4) }
-				), /** @type {any} */(undefined)
+				point(3, 4),
+				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
 			/** @type {any} */(undefined)
@@ -269,21 +206,13 @@ describe('sweep event compare', () => {
 	test('consistency edge case', () => {
 		// harvested from https://github.com/mfogel/polygon-clipping/issues/62
 		const seg1 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-71.0390933353125), y: new BigNumber(41.504475) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-71.0389879), y: new BigNumber(41.5037842) }
-			),
+			point(-71.0390933353125, 41.504475),
+			point(-71.0389879, 41.5037842),
 			/** @type {any} */(undefined)
 		);
 		const seg2 = Segment.fromRing(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-71.0390933353125), y: new BigNumber(41.504475) }
-			),
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(-71.03906280974431), y: new BigNumber(41.504275) }
-			),
+			point(-71.0390933353125, 41.504475),
+			point(-71.03906280974431, 41.504275),
 			/** @type {any} */(undefined)
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), -1);
@@ -293,9 +222,7 @@ describe('sweep event compare', () => {
 
 describe('constructor', () => {
 	test('events created from same point are already linked', () => {
-		const p1 = /** @type {import('../lib/sweep-event.js').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(0) }
-		);
+		const p1 = point(0, 0);
 		const s1 = new SweepEvent(p1, /** @type {any} */(undefined));
 		const s2 = new SweepEvent(p1, /** @type {any} */(undefined));
 		assert.strictEqual(s1.point, p1);
@@ -305,12 +232,8 @@ describe('constructor', () => {
 
 describe('sweep event link', () => {
 	test('link events already linked with others', () => {
-		const p1 = /** @type {import('../lib/sweep-event.js').Point} */(
-			{ x: new BigNumber(1), y: new BigNumber(2) }
-		);
-		const p2 = /** @type {import('../lib/sweep-event.js').Point} */(
-			{ x: new BigNumber(1), y: new BigNumber(2) }
-		);
+		const p1 = point(1, 2);
+		const p2 = point(1, 2);
 		const se1 = new SweepEvent(p1, /** @type {any} */(undefined));
 		const se2 = new SweepEvent(p1, /** @type {any} */(undefined));
 		const se3 = new SweepEvent(p2, /** @type {any} */(undefined));
@@ -318,9 +241,7 @@ describe('sweep event link', () => {
 		new Segment(
 			se1,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(5), y: new BigNumber(5) }
-				),
+				point(5, 5),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -329,9 +250,7 @@ describe('sweep event link', () => {
 		new Segment(
 			se2,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(6), y: new BigNumber(6) }
-				),
+				point(6, 6),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -340,9 +259,7 @@ describe('sweep event link', () => {
 		new Segment(
 			se3,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(7), y: new BigNumber(7) }
-				),
+				point(7, 7),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -351,9 +268,8 @@ describe('sweep event link', () => {
 		new Segment(
 			se4,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(8), y: new BigNumber(8) }
-				), /** @type {any} */(undefined)
+				point(8, 8),
+				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
 			/** @type {any} */(undefined)
@@ -366,9 +282,7 @@ describe('sweep event link', () => {
 	});
 
 	test('same event twice', () => {
-		const p1 = /** @type {import('../lib/sweep-event.js').Point} */(
-			{ x: new BigNumber(0), y: new BigNumber(0) }
-		);
+		const p1 = point(0, 0);
 		const s1 = new SweepEvent(p1, /** @type {any} */(undefined));
 		const s2 = new SweepEvent(p1, /** @type {any} */(undefined));
 		assert.throws(() => s2.link(s1));
@@ -379,31 +293,23 @@ describe('sweep event link', () => {
 describe('sweep event get leftmost comparator', () => {
 	test('after a segment straight to the right', () => {
 		const prevEvent = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		const event = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(0) }
-			),
+			point(1, 0),
 			/** @type {any} */(undefined)
 		);
 		const comparator = event.getLeftmostComparator(prevEvent);
 
 		const e1 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(0) }
-			),
+			point(1, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e1,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(0), y: new BigNumber(1) }
-				),
+				point(0, 1),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -411,17 +317,13 @@ describe('sweep event get leftmost comparator', () => {
 		);
 
 		const e2 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(0) }
-			),
+			point(1, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e2,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(1), y: new BigNumber(1) }
-				),
+				point(1, 1),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -429,17 +331,13 @@ describe('sweep event get leftmost comparator', () => {
 		);
 
 		const e3 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(0) }
-			),
+			point(1, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e3,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(2), y: new BigNumber(0) }
-				),
+				point(2, 0),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -447,17 +345,13 @@ describe('sweep event get leftmost comparator', () => {
 		);
 
 		const e4 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(0) }
-			),
+			point(1, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e4,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(1), y: new BigNumber(-1) }
-				),
+				point(1, -1),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -465,17 +359,13 @@ describe('sweep event get leftmost comparator', () => {
 		);
 
 		const e5 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(0) }
-			),
+			point(1, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e5,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(0), y: new BigNumber(-1) }
-				),
+				point(0, -1),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -501,31 +391,23 @@ describe('sweep event get leftmost comparator', () => {
 
 	test('after a down and to the left', () => {
 		const prevEvent = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(1), y: new BigNumber(1) }
-			),
+			point(1, 1),
 			/** @type {any} */(undefined)
 		);
 		const event = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		const comparator = event.getLeftmostComparator(prevEvent);
 
 		const e1 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e1,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(0), y: new BigNumber(1) }
-				),
+				point(0, 1),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -533,17 +415,13 @@ describe('sweep event get leftmost comparator', () => {
 		);
 
 		const e2 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e2,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(1), y: new BigNumber(0) }
-				),
+				point(1, 0),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -551,17 +429,13 @@ describe('sweep event get leftmost comparator', () => {
 		);
 
 		const e3 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e3,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(0), y: new BigNumber(-1) }
-				),
+				point(0, -1),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
@@ -569,17 +443,13 @@ describe('sweep event get leftmost comparator', () => {
 		);
 
 		const e4 = new SweepEvent(
-			/** @type {import('../lib/sweep-event.js').Point} */(
-				{ x: new BigNumber(0), y: new BigNumber(0) }
-			),
+			point(0, 0),
 			/** @type {any} */(undefined)
 		);
 		new Segment(
 			e4,
 			new SweepEvent(
-				/** @type {import('../lib/sweep-event.js').Point} */(
-					{ x: new BigNumber(-1), y: new BigNumber(0) }
-				),
+				point(-1, 0),
 				/** @type {any} */(undefined)
 			),
 			/** @type {any} */(undefined),
