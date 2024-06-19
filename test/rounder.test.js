@@ -2,7 +2,7 @@
 
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { precision } from '../lib/precision.js';
 
 describe('rounder.round()', () => {
