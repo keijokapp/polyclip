@@ -11,4 +11,5 @@ declare module "polyclip" {
 		subjectGeometry: Geometry,
 		...clipGeometriess: Geometry[]
 	): MultiPolygon
+	export function setPrecision(eps?: number | undefined): void
 }

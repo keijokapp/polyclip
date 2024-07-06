@@ -4,7 +4,10 @@
   "version": "0.15.7",
   "description": "Apply boolean polygon clipping operations (intersection, union, difference, xor) to your Polygons & MultiPolygons.",
   "main": "./lib/index.js",
-  "exports": "./lib/index.js",
+  "exports": {
+    "import": "./lib/index.js",
+    "types": "./lib/polyclip.d.ts"
+  },
   "types": "./lib/polyclip.d.ts",
   "scripts": {
     "bench": "node bench/bench.js",
