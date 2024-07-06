@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "allowSyntheticDefaultImports": true,
+    "exactOptionalPropertyTypes": true,
     "lib": ["esnext"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
