@@ -30,7 +30,7 @@ describe('end to end', () => {
 
 		describe(target, () => {
 			const targetDir = path.join(endToEndDir, target);
-			/** @type {{features: {geometry: {coordinates: import('polyclip').Geometry}}[]}} */
+			/** @type {{features: {geometry: {coordinates: import('../lib/index.js').Geometry}}[]}} */
 			const argsGeojson = JSON.parse(fs.readFileSync(path.join(targetDir, 'args.geojson'), 'utf-8'));
 			const args = argsGeojson.features.map(f => f.geometry.coordinates);
 
