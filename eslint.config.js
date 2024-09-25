@@ -12,8 +12,7 @@ export default [
 		files: ['*.js', 'bench/**', 'test/**'],
 		rules: {
 			'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-			'no-console': 'off',
-			'no-underscore-dangle': 'off'
+			'no-console': 'off'
 		}
 	}
 ];

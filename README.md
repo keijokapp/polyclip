@@ -68,6 +68,7 @@ The Martinez-Rueda-Feito polygon clipping algorithm is used to compute the resul
 
 ## Authors
 
+- [Keijo Kapp](https://github.com/keijokapp)
 - [Luiz F. M. Barboza](https://github.com/SBanksX)
 - [Mike Fogel](https://github.com/mfogel)
 - [Alexander Milevski](https://github.com/w8r)

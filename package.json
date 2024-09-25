@@ -1,7 +1,7 @@
 {
   "type": "module",
-  "name": "polyclip",
-  "version": "0.15.7",
+  "name": "@arbendium/polyclip",
+  "version": "0.0.0",
   "description": "Apply boolean polygon clipping operations (intersection, union, difference, xor) to your Polygons & MultiPolygons.",
   "main": "./lib/index.js",
   "exports": {
