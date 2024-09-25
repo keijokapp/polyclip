@@ -26,7 +26,9 @@ describe('end to end', () => {
 
 	targets.forEach(target => {
 		// ignore dotfiles like .DS_Store
-		if (target.startsWith('.')) return;
+		if (target.startsWith('.')) {
+			return;
+		}
 
 		describe(target, () => {
 			const targetDir = path.join(endToEndDir, target);
@@ -51,14 +53,24 @@ describe('end to end', () => {
 			resultPathsAndOperationTypes.forEach(([operationType, resultPath]) => {
 				/** @type {typeof test | typeof test.skip} */
 				let doTest = test;
-				if (targetsSkip.includes(target)) doTest = test.skip;
-				if (opsSkip.includes(operationType)) doTest = test.skip;
+
+				if (targetsSkip.includes(target)) {
+					doTest = test.skip;
+				}
+
+				if (opsSkip.includes(operationType)) {
+					doTest = test.skip;
+				}
+
 				if (targetOnly && opOnly) {
 					if (target === targetOnly && operationType === opOnly) {
 						doTest = test.only;
 					}
-				} else if (targetOnly && target === targetOnly) doTest = test.only;
-				else if (opOnly && operationType === opOnly) doTest = test.only;
+				} else if (targetOnly && target === targetOnly) {
+					doTest = test.only;
+				} else if (opOnly && operationType === opOnly) {
+					doTest = test.only;
+				}
 
 				doTest(operationType, () => {
 					const resultGeojson = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
@@ -69,6 +81,7 @@ describe('end to end', () => {
 					const operation = polyclip[
 						/** @type {"union" | "intersection" | "xor" | "difference"} */(operationType)
 					];
+
 					if (!operation) {
 						throw new Error(`Unknown operation '${operationType}'. Mispelling in filename of ${resultPath} ?`);
 					}

@@ -35,12 +35,12 @@
   "author": "Keijo Kapp <projects@keijo.ee>",
   "license": "MIT",
   "devDependencies": {
-    "@arbendium/eslint-config-base": "^0.2.2",
-    "@turf/union": "^6.5.0",
-    "@types/node": "^20.14.2",
+    "@arbendium/eslint-config-base": "^1.0.0",
+    "@turf/union": "^7.1.0",
+    "@types/node": "^20.14.8",
     "benchmark": "^2.1.4",
-    "eslint": "^8.57.0",
-    "martinez-polygon-clipping": "^0.7.3"
+    "eslint": "^8.57.1",
+    "martinez-polygon-clipping": "^0.7.4"
   },
   "dependencies": {
     "bignumber.js": "^9.1.2",
