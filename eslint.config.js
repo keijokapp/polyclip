@@ -9,7 +9,7 @@ export default [
 		}
 	},
 	{
-		files: ['*.js', 'bench/**', 'test/**'],
+		files: ['*.js', 'test/**'],
 		rules: {
 			'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
 			'no-console': 'off'
