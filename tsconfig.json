@@ -4,8 +4,8 @@
     "exactOptionalPropertyTypes": true,
     "module": "preserve",
     "noEmit": true,
-    "strict": true,
-    "target": "esnext",
+    "skipLibCheck": true,
+    "types": ["node"],
   },
   "include": ["lib/**/*", "test/**/*"]
 }

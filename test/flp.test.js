@@ -52,7 +52,7 @@ describe('compare', () => {
 	test('really close to zero', () => {
 		const a = new BigNumber(Number.EPSILON);
 		const b = new BigNumber(Number.EPSILON).plus(
-			new BigNumber(Number.EPSILON).times(new BigNumber(Number.EPSILON)).times(new BigNumber(2))
+			new BigNumber(Number.EPSILON).times(new BigNumber(Number.EPSILON)).times(new BigNumber(2)),
 		);
 		assert.strictEqual(compare(a, b), 0);
 	});

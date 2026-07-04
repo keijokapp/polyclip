@@ -26,7 +26,7 @@ function toVector(point) {
 	if (point != null) {
 		return {
 			x: point.x,
-			y: point.y
+			y: point.y,
 		};
 	}
 }
@@ -35,11 +35,11 @@ describe('constructor', () => {
 	test('general', () => {
 		const leftSE = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const rightSE = new SweepEvent(
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		/** @type {import('../lib/geom-in.js').RingIn[]} */
 		const rings = [];
@@ -59,11 +59,11 @@ describe('constructor', () => {
 	test('segment Id increments', () => {
 		const leftSE = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const rightSE = new SweepEvent(
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg1 = new Segment(leftSE, rightSE, [], /** @type {any} */(undefined));
 		const seg2 = new Segment(leftSE, rightSE, [], /** @type {any} */(undefined));
@@ -100,7 +100,7 @@ describe('split', () => {
 		const seg = Segment.fromRing(
 			point(0, 0),
 			point(10, 10),
-			/** @type {any} */(true)
+			/** @type {any} */(true),
 		);
 		const pt = point(5, 5);
 		const evts = seg.split(pt);
@@ -120,7 +120,7 @@ describe('split', () => {
 		const seg = Segment.fromRing(
 			point(0, 10),
 			point(10, 0),
-			/** @type {any} */(false)
+			/** @type {any} */(false),
 		);
 		const pt = point(new BigNumber(5).plus(new BigNumber(Number.EPSILON)), 5);
 		const evts = seg.split(pt);
@@ -137,12 +137,12 @@ describe('split', () => {
 		const seg = Segment.fromRing(
 			point(0, 0),
 			point(10, 10),
-			/** @type {any} */(true)
+			/** @type {any} */(true),
 		);
 		const [sPt1, sPt2, sPt3] = [
 			point(2, 2),
 			point(4, 4),
-			point(6, 6)
+			point(6, 6),
 		];
 
 		const [orgLeftEvt, orgRightEvt] = [seg.leftSE, seg.rightSE];
@@ -175,11 +175,11 @@ describe('simple properties - bbox, vector', () => {
 		const seg = Segment.fromRing(
 			point(1, 2),
 			point(3, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.deepStrictEqual(seg.bbox(), {
 			ll: { x: new BigNumber(1), y: new BigNumber(2) },
-			ur: { x: new BigNumber(3), y: new BigNumber(4) }
+			ur: { x: new BigNumber(3), y: new BigNumber(4) },
 		});
 		assert.deepStrictEqual(seg.vector(), { x: new BigNumber(2), y: new BigNumber(2) });
 	});
@@ -188,11 +188,11 @@ describe('simple properties - bbox, vector', () => {
 		const seg = Segment.fromRing(
 			point(1, 4),
 			point(3, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.deepStrictEqual(seg.bbox(), {
 			ll: { x: new BigNumber(1), y: new BigNumber(4) },
-			ur: { x: new BigNumber(3), y: new BigNumber(4) }
+			ur: { x: new BigNumber(3), y: new BigNumber(4) },
 		});
 		assert.deepStrictEqual(seg.vector(), { x: new BigNumber(2), y: new BigNumber(0) });
 	});
@@ -201,11 +201,11 @@ describe('simple properties - bbox, vector', () => {
 		const seg = Segment.fromRing(
 			point(3, 2),
 			point(3, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.deepStrictEqual(seg.bbox(), {
 			ll: { x: new BigNumber(3), y: new BigNumber(2) },
-			ur: { x: new BigNumber(3), y: new BigNumber(4) }
+			ur: { x: new BigNumber(3), y: new BigNumber(4) },
 		});
 		assert.deepStrictEqual(seg.vector(), { x: new BigNumber(0), y: new BigNumber(2) });
 	});
@@ -276,11 +276,11 @@ describe('is an endpoint', () => {
 	test('nope', () => {
 		assert.strictEqual(
 			seg.isAnEndpoint({ x: new BigNumber(-34), y: new BigNumber(46) }),
-			false
+			false,
 		);
 		assert.strictEqual(
 			seg.isAnEndpoint(point(0, 0)),
-			false
+			false,
 		);
 	});
 });
@@ -290,46 +290,46 @@ describe('comparison with point', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(0, 1),
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		assert.strictEqual(
 			s1.comparePoint(point(0, 1)),
-			1
+			1,
 		);
 		assert.strictEqual(
 			s1.comparePoint(point(1, 2)),
-			1
+			1,
 		);
 		assert.strictEqual(
 			s1.comparePoint(point(0, 0)),
-			0
+			0,
 		);
 		assert.strictEqual(
 			s1.comparePoint(point(5, -1)),
-			-1
+			-1,
 		);
 
 		assert.strictEqual(
 			s2.comparePoint(point(0, 1)),
-			0
+			0,
 		);
 		assert.strictEqual(
 			s2.comparePoint(point(1, 2)),
-			-1
+			-1,
 		);
 		assert.strictEqual(
 			s2.comparePoint(point(0, 0)),
-			0
+			0,
 		);
 		assert.strictEqual(
 			s2.comparePoint(point(5, -1)),
-			-1
+			-1,
 		);
 	});
 
@@ -337,7 +337,7 @@ describe('comparison with point', () => {
 		const s1 = Segment.fromRing(
 			point(1, 1),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(2), y: new BigNumber(1).minus(new BigNumber(Number.EPSILON)) };
 		assert.strictEqual(s1.comparePoint(pt), -1);
@@ -347,12 +347,12 @@ describe('comparison with point', () => {
 		const s1 = Segment.fromRing(
 			point(1, 1),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = {
 			x: new BigNumber(2),
 			y: new BigNumber(1)
-				.plus(new BigNumber(Number.EPSILON).times(new BigNumber(3)).div(new BigNumber(2)))
+				.plus(new BigNumber(Number.EPSILON).times(new BigNumber(3)).div(new BigNumber(2))),
 		};
 		assert.strictEqual(s1.comparePoint(pt), 1);
 	});
@@ -361,7 +361,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(1, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(0) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -371,7 +371,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(1, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(2), y: new BigNumber(0) };
 		assert.strictEqual(seg.comparePoint(pt), -1);
@@ -381,7 +381,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(1, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(1), y: new BigNumber(0) };
 		assert.strictEqual(seg.comparePoint(pt), 0);
@@ -391,7 +391,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(0) };
 		assert.strictEqual(seg.comparePoint(pt), -1);
@@ -401,7 +401,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -411,7 +411,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(1) };
 		assert.strictEqual(seg.comparePoint(pt), 0);
@@ -421,7 +421,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(2), y: new BigNumber(0) };
 		assert.strictEqual(seg.comparePoint(pt), -1);
@@ -431,7 +431,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(2), y: new BigNumber(4) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -441,7 +441,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -451,7 +451,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(4), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), -1);
@@ -461,7 +461,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 3),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), -1);
@@ -471,7 +471,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 3),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(4), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -481,7 +481,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 6),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -491,7 +491,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 1),
 			point(3, 6),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(4), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), -1);
@@ -501,7 +501,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 6),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), -1);
@@ -511,7 +511,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(1, 6),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(4), y: new BigNumber(2) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -521,7 +521,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(0.523985, 51.281651),
 			point(0.5241, 51.281651000100005),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(0.5239850000000027), y: new BigNumber(51.281651000000004) };
 		assert.strictEqual(seg.comparePoint(pt), 1);
@@ -532,7 +532,7 @@ describe('comparison with point', () => {
 		const seg = Segment.fromRing(
 			point(-45.3269382, -1.4059341),
 			point(-45.326737413921656, -1.40635),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const pt = { x: new BigNumber(-45.326833968900424), y: new BigNumber(-1.40615) };
 		assert.strictEqual(seg.comparePoint(pt), 0);
@@ -545,12 +545,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(s1.getIntersection(s2), undefined);
 		assert.strictEqual(s2.getIntersection(s1), undefined);
@@ -560,12 +560,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(2, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(1, 1),
 			point(3, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
 		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
@@ -576,12 +576,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 2),
 			point(2, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(-1, 3),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const inter = { x: new BigNumber(0), y: new BigNumber(2) };
 		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
@@ -592,12 +592,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 1),
 			point(2, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(1, 1),
 			point(3, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
 		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
@@ -608,12 +608,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(0, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(0, 2),
 			point(0, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const inter = { x: new BigNumber(0), y: new BigNumber(2) };
 		assert.deepStrictEqual(toVector(s1.getIntersection(s2)), inter);
@@ -624,12 +624,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(1, 1),
 			point(2, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(s1.getIntersection(s2), undefined);
 		assert.strictEqual(s2.getIntersection(s1), undefined);
@@ -639,12 +639,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(3, 3),
 			point(4, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(s1.getIntersection(s2), undefined);
 		assert.strictEqual(s2.getIntersection(s1), undefined);
@@ -654,12 +654,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(0, 3),
 			point(1, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(s1.getIntersection(s2), undefined);
 		assert.strictEqual(s2.getIntersection(s1), undefined);
@@ -669,12 +669,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(2, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(0, 2),
 			point(2, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
@@ -686,12 +686,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(2, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(1, 1),
 			point(5, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
@@ -703,12 +703,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(5, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(3, 0),
 			point(3, 44),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(3), y: new BigNumber(3) };
@@ -720,12 +720,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(5, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(0, 3),
 			point(23, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(3), y: new BigNumber(3) };
@@ -737,12 +737,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(5, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(3, 0),
 			point(3, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(3), y: new BigNumber(0) };
@@ -754,12 +754,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(5, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(3, -5),
 			point(3, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(3), y: new BigNumber(0) };
@@ -771,12 +771,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(1000, 10002),
 			point(2000, 20002),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(-234, -123),
 			point(-12, -23),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(s1.getIntersection(s2), undefined);
 		assert.strictEqual(s2.getIntersection(s1), undefined);
@@ -786,12 +786,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(0, 10),
 			point(10, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(s1.getIntersection(s2), undefined);
 		assert.strictEqual(s2.getIntersection(s1), undefined);
@@ -801,12 +801,12 @@ describe('get intersections 2', () => {
 		const s1 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = Segment.fromRing(
 			point(2, -5),
 			point(2, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(s1.getIntersection(s2), undefined);
 		assert.strictEqual(s2.getIntersection(s1), undefined);
@@ -816,12 +816,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, 1),
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -831,12 +831,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, 1),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -846,12 +846,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0.5, 0.5),
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(0.5), y: new BigNumber(0.5) };
@@ -863,12 +863,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, 1),
 			point(0.5, 0.5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(0.5), y: new BigNumber(0.5) };
@@ -880,12 +880,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(10, 10),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(1, 1),
 			point(5, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
@@ -897,12 +897,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(1, 1),
 			point(10, 10),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(1, 1),
 			point(5, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(5), y: new BigNumber(5) };
@@ -914,12 +914,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(3, 3),
 			point(10, 10),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, 0),
 			point(5, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(3), y: new BigNumber(3) };
@@ -931,12 +931,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -946,12 +946,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(1, 1),
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -961,12 +961,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(1, 1),
 			point(2, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -976,12 +976,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(1, 1),
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(1, 1),
 			point(2, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -991,12 +991,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(1, 1),
 			point(2, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(1), y: new BigNumber(1) };
@@ -1008,12 +1008,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(4, 0),
 			point(0, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(3, 1),
 			point(1, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const inter = { x: new BigNumber(1), y: new BigNumber(3) };
@@ -1025,12 +1025,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(2, 2),
 			point(4, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -1040,12 +1040,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, -1),
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -1055,12 +1055,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(1, 1),
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, -1),
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -1070,12 +1070,12 @@ describe('get intersections 2', () => {
 		const a = Segment.fromRing(
 			point(0, -1),
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const b = Segment.fromRing(
 			point(0, 0),
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(a.getIntersection(b), undefined);
 		assert.strictEqual(b.getIntersection(a), undefined);
@@ -1091,17 +1091,17 @@ describe('get intersections 2', () => {
 		const segA1 = Segment.fromRing(
 			point(x, y),
 			point(-91.4134943, 29.5310677),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const segA2 = Segment.fromRing(
 			point(x, y),
 			point(-91.413, 29.5315),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const segB = Segment.fromRing(
 			point(-91.4137213, 29.5316244),
 			point(-91.41352785864918, 29.53115),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		assert.deepStrictEqual(toVector(segA1.getIntersection(segB)), { x, y });
@@ -1117,12 +1117,12 @@ describe('get intersections 2', () => {
 		const segA = Segment.fromRing(
 			point(18.60315316392773, 10.491431056669754),
 			point(endX, endY),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const segB = Segment.fromRing(
 			point(-32.42, 55.26),
 			point(endX, endY),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		assert.strictEqual(segA.getIntersection(segB), undefined);
@@ -1133,12 +1133,12 @@ describe('get intersections 2', () => {
 		const segA = Segment.fromRing(
 			point(-10.000000000000004, 0),
 			point(-9.999999999999995, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const segB = Segment.fromRing(
 			point(-10.000000000000004, 0),
 			point(-9.999999999999995, 1000),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(segA.getIntersection(segB), undefined);
 		assert.strictEqual(segB.getIntersection(segA), undefined);
@@ -1148,12 +1148,12 @@ describe('get intersections 2', () => {
 		const segA = Segment.fromRing(
 			point(145.854148864746, -41.99816840491791),
 			point(145.85421323776, -41.9981723915721),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const segB = Segment.fromRing(
 			point(145.854148864746, -41.998168404918),
 			point(145.8543, -41.9982),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(segA.getIntersection(segB), undefined);
 		assert.strictEqual(segB.getIntersection(segA), undefined);
@@ -1166,12 +1166,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(1, 1),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(4, 3),
 				point(6, 7),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1181,12 +1181,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, -4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(1, 1),
 				point(6, 7),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1196,12 +1196,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, -4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-5, -5),
 				point(6, -7),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1211,12 +1211,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, -1),
 				point(-5, -5),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1226,12 +1226,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-5, -5),
 				point(0, -3),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1241,12 +1241,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-5, 5),
 				point(0, 3),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1258,12 +1258,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-1, -5),
 				point(1, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1273,12 +1273,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, -2),
 				point(3, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1288,12 +1288,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(1, -2),
 				point(3, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1303,12 +1303,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-1, 5),
 				point(1, -2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1318,12 +1318,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, 2),
 				point(3, -2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1333,12 +1333,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(1, 2),
 				point(3, -2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1348,12 +1348,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(1, -2),
 				point(1, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1365,12 +1365,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(2, -2),
 				point(6, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1380,12 +1380,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-2, 2),
 				point(2, -2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1395,12 +1395,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-2, -2),
 				point(2, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1410,12 +1410,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, -2),
 				point(0, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1427,12 +1427,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-1, -5),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1442,12 +1442,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, -2),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1457,12 +1457,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(1, -2),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1472,12 +1472,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-1, 5),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1487,12 +1487,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, 2),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1502,12 +1502,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(1, 2),
 				point(4, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), -1);
 			assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1519,12 +1519,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, 0),
 				point(4, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1534,12 +1534,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(0, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, 0),
 				point(4, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1550,12 +1550,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(-60.6876, -40.83428174062278),
 				point(-60.6841701, -40.83491),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-60.6876, -40.83428174062278),
 				point(-60.6874, -40.83431837489067),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1568,12 +1568,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-1, -1),
 				point(2, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1583,12 +1583,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-1, -1),
 				point(5, 5),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1598,12 +1598,12 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			const seg2 = Segment.fromRing(
 				point(-1, -1),
 				point(4, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1613,17 +1613,17 @@ describe('compare segments', () => {
 			const seg1 = Segment.fromRing(
 				point(0, 0),
 				point(4, 4),
-				/** @type {any} */({ id: 1 })
+				/** @type {any} */({ id: 1 }),
 			);
 			const seg2 = Segment.fromRing(
 				point(0, 0),
 				point(3, 3),
-				/** @type {any} */({ id: 2 })
+				/** @type {any} */({ id: 2 }),
 			);
 			const seg3 = Segment.fromRing(
 				point(0, 0),
 				point(5, 5),
-				/** @type {any} */({ id: 3 })
+				/** @type {any} */({ id: 3 }),
 			);
 			assert.strictEqual(Segment.compare(seg1, seg2), 1);
 			assert.strictEqual(Segment.compare(seg2, seg1), -1);
@@ -1640,12 +1640,12 @@ describe('compare segments', () => {
 		const seg1 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */({ id: 1 })
+			/** @type {any} */({ id: 1 }),
 		);
 		const seg2 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */({ id: 2 })
+			/** @type {any} */({ id: 2 }),
 		);
 		assert.strictEqual(Segment.compare(seg1, seg2), -1);
 		assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1655,12 +1655,12 @@ describe('compare segments', () => {
 		const seg1 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */({ id: 1 })
+			/** @type {any} */({ id: 1 }),
 		);
 		const seg2 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */({ id: 1 })
+			/** @type {any} */({ id: 1 }),
 		);
 		const result = Segment.compare(seg1, seg2);
 		assert.strictEqual(Segment.compare(seg1, seg2), result);
@@ -1671,12 +1671,12 @@ describe('compare segments', () => {
 		const seg1 = Segment.fromRing(
 			point(-131.57153657554915, 55.01963125),
 			point(-131.571478, 55.0187174),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(-131.57153657554915, 55.01963125),
 			point(-131.57152375603846, 55.01943125),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(Segment.compare(seg1, seg2), -1);
 		assert.strictEqual(Segment.compare(seg2, seg1), 1);
@@ -1686,17 +1686,17 @@ describe('compare segments', () => {
 		const seg2 = Segment.fromRing(
 			point(-10.000000000000018, -9.17),
 			point(-10.000000000000004, -8.79),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg6 = Segment.fromRing(
 			point(-10.000000000000016, 1.44),
 			point(-9, 1.5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg4 = Segment.fromRing(
 			point(-10.00000000000001, 1.75),
 			point(-9, 1.5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		assert.strictEqual(Segment.compare(seg2, seg6), -1);
@@ -1712,17 +1712,17 @@ describe('compare segments', () => {
 		const seg1 = Segment.fromRing(
 			point(-10.000000000000002, 1.8181818181818183),
 			point(-9.999999999999996, -3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(-10.000000000000002, 1.8181818181818183),
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg3 = Segment.fromRing(
 			point(-10.000000000000002, 1.8181818181818183),
 			point(-10.000000000000002, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		assert.strictEqual(Segment.compare(seg1, seg2), -1);

@@ -10,7 +10,7 @@ import {
 	perpendicular,
 	verticalIntersection,
 	horizontalIntersection,
-	intersection
+	intersection,
 } from '../lib/vector.js';
 
 describe('cross product', () => {
@@ -66,13 +66,13 @@ describe('sine and cosine of angle', () => {
 		test('sine', () => {
 			assert.strictEqual(
 				sineOfAngle(shared, base, angle).toNumber(),
-				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
+				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber(),
 			);
 		});
 		test('cosine', () => {
 			assert.strictEqual(
 				cosineOfAngle(shared, base, angle).toNumber(),
-				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
+				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber(),
 			);
 		});
 	});
@@ -96,14 +96,14 @@ describe('sine and cosine of angle', () => {
 		test('sine', () => {
 			assert.strictEqual(
 				sineOfAngle(shared, base, angle).toNumber(),
-				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
+				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber(),
 			);
 		});
 		test('cosine', () => {
 			assert.strictEqual(
 				cosineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
-					.toNumber()
+					.toNumber(),
 			);
 		});
 	});
@@ -128,14 +128,14 @@ describe('sine and cosine of angle', () => {
 			assert.strictEqual(
 				sineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
-					.toNumber()
+					.toNumber(),
 			);
 		});
 		test('cosine', () => {
 			assert.strictEqual(
 				cosineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
-					.toNumber()
+					.toNumber(),
 			);
 		});
 	});
@@ -160,13 +160,13 @@ describe('sine and cosine of angle', () => {
 			assert.strictEqual(
 				sineOfAngle(shared, base, angle).toNumber(),
 				new BigNumber(2).sqrt().negated().div(new BigNumber(2))
-					.toNumber()
+					.toNumber(),
 			);
 		});
 		test('cosine', () => {
 			assert.strictEqual(
 				cosineOfAngle(shared, base, angle).toNumber(),
-				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber()
+				new BigNumber(2).sqrt().div(new BigNumber(2)).toNumber(),
 			);
 		});
 	});
@@ -323,7 +323,7 @@ describe('intersection()', () => {
 		const v1 = { x: new BigNumber(0.0002729999999999677), y: new BigNumber(0.0002729999999999677) };
 		const p2 = { x: new BigNumber(0.523985), y: new BigNumber(51.281651) };
 		const v2 = {
-			x: new BigNumber(0.000024999999999941735), y: new BigNumber(0.000049000000004184585)
+			x: new BigNumber(0.000024999999999941735), y: new BigNumber(0.000049000000004184585),
 		};
 		const i1 = /** @type {import('../lib/vector.js').Vector} */(intersection(p1, v1, p2, v2));
 		const i2 = /** @type {import('../lib/vector.js').Vector} */(intersection(p2, v2, p1, v1));

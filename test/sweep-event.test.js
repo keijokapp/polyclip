@@ -19,11 +19,11 @@ describe('sweep event compare', () => {
 	test('favor earlier x in point', () => {
 		const s1 = new SweepEvent(
 			point(-5, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = new SweepEvent(
 			point(5, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(s1, s2), -1);
 		assert.strictEqual(SweepEvent.compare(s2, s1), 1);
@@ -32,11 +32,11 @@ describe('sweep event compare', () => {
 	test('then favor earlier y in point', () => {
 		const s1 = new SweepEvent(
 			point(5, -4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = new SweepEvent(
 			point(5, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(s1, s2), -1);
 		assert.strictEqual(SweepEvent.compare(s2, s1), 1);
@@ -46,12 +46,12 @@ describe('sweep event compare', () => {
 		const seg1 = Segment.fromRing(
 			point(5, 4),
 			point(3, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(5, 4),
 			point(6, 5),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.rightSE, seg2.leftSE), -1);
 		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.rightSE), 1);
@@ -61,12 +61,12 @@ describe('sweep event compare', () => {
 		const seg1 = Segment.fromRing(
 			point(3, 2),
 			point(3, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(3, 2),
 			point(5, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
 		assert.strictEqual(SweepEvent.compare(seg2.rightSE, seg1.leftSE), 1);
@@ -76,12 +76,12 @@ describe('sweep event compare', () => {
 		const seg1 = Segment.fromRing(
 			point(3, 4),
 			point(3, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(3, 4),
 			point(1, 2),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
 		assert.strictEqual(SweepEvent.compare(seg2.rightSE, seg1.leftSE), 1);
@@ -91,12 +91,12 @@ describe('sweep event compare', () => {
 		const seg1 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(0, 0),
 			point(5, 6),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.rightSE), -1);
 		assert.strictEqual(SweepEvent.compare(seg2.rightSE, seg1.leftSE), 1);
@@ -110,12 +110,12 @@ describe('sweep event compare', () => {
 		const seg1 = Segment.fromRing(
 			point(-75.725, 45.357),
 			point(-75.72484615384616, 45.35723076923077),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(-75.725, 45.357),
 			point(-75.723, 45.36),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), 1);
 		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.leftSE), -1);
@@ -125,12 +125,12 @@ describe('sweep event compare', () => {
 		const seg1 = Segment.fromRing(
 			point(0, 0),
 			point(4, 4),
-			/** @type {any} */({ id: 1 })
+			/** @type {any} */({ id: 1 }),
 		);
 		const seg2 = Segment.fromRing(
 			point(0, 0),
 			point(5, 5),
-			/** @type {any} */({ id: 2 })
+			/** @type {any} */({ id: 2 }),
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), -1);
 		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.leftSE), 1);
@@ -139,11 +139,11 @@ describe('sweep event compare', () => {
 	test('identical equal', () => {
 		const s1 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s3 = new SweepEvent(
 			point(3, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
@@ -153,15 +153,15 @@ describe('sweep event compare', () => {
 	test('totally equal but not identical events are consistent', () => {
 		const s1 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s3 = new SweepEvent(
 			point(3, 3),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(s1, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
 		new Segment(s2, s3, /** @type {any} */({ id: 1 }), /** @type {any} */(undefined));
@@ -173,29 +173,29 @@ describe('sweep event compare', () => {
 	test('events are linked as side effect', () => {
 		const s1 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const s2 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			s1,
 			new SweepEvent(
 				point(2, 2),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			s2,
 			new SweepEvent(
 				point(3, 4),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.notStrictEqual(s1.point, s2.point);
 		SweepEvent.compare(s1, s2);
@@ -207,12 +207,12 @@ describe('sweep event compare', () => {
 		const seg1 = Segment.fromRing(
 			point(-71.0390933353125, 41.504475),
 			point(-71.0389879, 41.5037842),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const seg2 = Segment.fromRing(
 			point(-71.0390933353125, 41.504475),
 			point(-71.03906280974431, 41.504275),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		assert.strictEqual(SweepEvent.compare(seg1.leftSE, seg2.leftSE), -1);
 		assert.strictEqual(SweepEvent.compare(seg2.leftSE, seg1.leftSE), 1);
@@ -241,37 +241,37 @@ describe('sweep event link', () => {
 			se1,
 			new SweepEvent(
 				point(5, 5),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			se2,
 			new SweepEvent(
 				point(6, 6),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			se3,
 			new SweepEvent(
 				point(7, 7),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			se4,
 			new SweepEvent(
 				point(8, 8),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		se1.link(se3);
 		assert.strictEqual(se1.point.events.length, 4);
@@ -293,82 +293,82 @@ describe('sweep event get leftmost comparator', () => {
 	test('after a segment straight to the right', () => {
 		const prevEvent = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const event = new SweepEvent(
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const comparator = event.getLeftmostComparator(prevEvent);
 
 		const e1 = new SweepEvent(
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e1,
 			new SweepEvent(
 				point(0, 1),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const e2 = new SweepEvent(
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e2,
 			new SweepEvent(
 				point(1, 1),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const e3 = new SweepEvent(
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e3,
 			new SweepEvent(
 				point(2, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const e4 = new SweepEvent(
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e4,
 			new SweepEvent(
 				point(1, -1),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const e5 = new SweepEvent(
 			point(1, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e5,
 			new SweepEvent(
 				point(0, -1),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		assert.strictEqual(comparator(e1, e2), -1);
@@ -391,68 +391,68 @@ describe('sweep event get leftmost comparator', () => {
 	test('after a down and to the left', () => {
 		const prevEvent = new SweepEvent(
 			point(1, 1),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const event = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		const comparator = event.getLeftmostComparator(prevEvent);
 
 		const e1 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e1,
 			new SweepEvent(
 				point(0, 1),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const e2 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e2,
 			new SweepEvent(
 				point(1, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const e3 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e3,
 			new SweepEvent(
 				point(0, -1),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		const e4 = new SweepEvent(
 			point(0, 0),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 		new Segment(
 			e4,
 			new SweepEvent(
 				point(-1, 0),
-				/** @type {any} */(undefined)
+				/** @type {any} */(undefined),
 			),
 			/** @type {any} */(undefined),
-			/** @type {any} */(undefined)
+			/** @type {any} */(undefined),
 		);
 
 		assert.strictEqual(comparator(e1, e2), 1);

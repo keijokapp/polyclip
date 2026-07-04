@@ -39,7 +39,7 @@ describe('rounder.round()', () => {
 		const pt1 = { x: new BigNumber(3), y: new BigNumber(4) };
 		const pt2 = {
 			x: new BigNumber(3).plus(new BigNumber(Number.EPSILON)),
-			y: new BigNumber(4).plus(new BigNumber(Number.EPSILON))
+			y: new BigNumber(4).plus(new BigNumber(Number.EPSILON)),
 		};
 		assert.deepStrictEqual(precision.snap(pt1), pt1);
 		assert.deepStrictEqual(precision.snap(pt2), pt1);
@@ -49,7 +49,7 @@ describe('rounder.round()', () => {
 		precision.set(Number.EPSILON);
 		const pt1 = {
 			x: new BigNumber(Number.EPSILON).div(new BigNumber(2)),
-			y: new BigNumber(-Number.EPSILON).div(new BigNumber(2))
+			y: new BigNumber(-Number.EPSILON).div(new BigNumber(2)),
 		};
 		assert.notStrictEqual(pt1.x, 0);
 		assert.notStrictEqual(pt1.y, 0);

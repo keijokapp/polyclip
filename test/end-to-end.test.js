@@ -43,7 +43,7 @@ describe('end to end', () => {
 						['union', p],
 						['intersection', p],
 						['xor', p],
-						['difference', p]
+						['difference', p],
 					]
 					: [[opType, p]])
 				.reduce((acc, val) => acc.concat(val), []); // flatten equiv: .flat(1)
